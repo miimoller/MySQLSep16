@@ -1,9 +1,58 @@
 ﻿// See https://aka.ms/new-console-template for more information
+using Google.Protobuf.WellKnownTypes;
 using MySQLSep16.DataAccess;
 using MySQLSep16.Models;
+using Org.BouncyCastle.Asn1.X509;
 using System.ComponentModel;
 
 CarData cardata = new CarData();
+BankData bankdata = new BankData();
+
+BankModel b = new BankModel
+{
+    Amt = 200.00M,
+    txDate = DateTime.Now,
+    tx_type_typeID = 1
+
+};
+List<BankModel> alltx = bankdata.getAllTx();
+Console.WriteLine("All current cars");
+foreach (BankModel tx in alltx)
+{
+    string type = "Deposit";
+    if (tx.tx_type_typeID == 2)
+    {
+        type = "Withdraw";
+    }
+    Console.WriteLine(tx.txID + ": " + type +" is "+tx.Amt+" on "+ tx.txDate);
+}
+Console.WriteLine("Updating #2");
+Console.WriteLine("Deleating #13");
+Console.WriteLine("Making new tx");
+bankdata.deleteTx(bankdata.getTxByID(13));
+
+bankdata.CreateTx(b);
+
+BankModel holder = bankdata.getTxByID(2);
+holder.Amt = 1234567M;
+holder.tx_type_typeID = 1;
+holder.txDate = DateTime.Now;
+
+bankdata.UpdateTx(holder);
+
+bankdata.CreateTx(b);
+Console.WriteLine("AllCars after");
+List<BankModel> afterList = bankdata.getAllTx();
+
+foreach (BankModel tx in afterList)
+{
+    string type = "Deposit";
+    if (tx.tx_type_typeID == 2)
+    {
+        type = "Withdraw";
+    }
+    Console.WriteLine(tx.txID+":"+type + " is " + tx.Amt + " on " + tx.txDate);
+}
 
 List<CarModel> cars = cardata.getAllCars();
 /*
@@ -39,11 +88,19 @@ while (add)
 }
 */
 
+CarModel car1 = new CarModel
+{
+    Year = 2022,
+    Make = "VM",
+    Model = "Something2"
+};
+//cardata.CreateCar(car1);
 
-List<int> years = cardata.getYears();
-List<string> makes = cardata.getMake();
-List<CarModel> carYears = cardata.SearchYear();
 
+//List<int> years = cardata.GetYears();
+//List<string> makes = cardata.GetMake();
+//List<CarModel> carYears = cardata.SearchYear();
+/*
 Console.WriteLine("Distinct Years");
 foreach (int x in years)
 {
@@ -59,10 +116,30 @@ foreach (CarModel car in carYears)
 {
     Console.WriteLine($"CarID:{car.CarID}, Year:{car.Year}, Make:{car.Make}, Model:{car.Model}");
 }
-
-    Console.WriteLine("All Cars");
+*/
+/*
+Console.WriteLine("All Cars Before update");
 foreach (CarModel car in cars)
 {
     Console.WriteLine($"CarID:{car.CarID}, Year:{car.Year}, Make:{car.Make}, Model:{car.Model}");
 }
+
+CarModel carHold = cardata.GetCarByID(7);
+
+carHold.Make = car1.Make;
+carHold.Model = car1.Model;
+carHold.Year = car1.Year;
+
+cardata.UpdateCar(carHold);
+
+cars=cardata.getAllCars();
+Console.WriteLine("All Cars after update");
+foreach (CarModel car in cars)
+{
+    Console.WriteLine($"CarID:{car.CarID}, Year:{car.Year}, Make:{car.Make}, Model:{car.Model}");
+}
+*/
+
+
+
 Console.ReadLine();

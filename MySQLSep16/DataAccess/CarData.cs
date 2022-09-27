@@ -20,10 +20,29 @@ namespace MySQLSep16.DataAccess
 ;           return cars;
         }
 
+        public CarModel GetCarByID(int id)
+        {
+            string sql = "Select * FROM car_basic WHERE CarID = @CarID";
+            List<CarModel> cars = _db.LoadData<CarModel, dynamic>(sql, new { CarID = id });
+            return cars.FirstOrDefault(u => u.CarID == id);
+        }
+
         public void CreateCar(CarModel c)
         {
             string sql = "INSERT INTO `car_basic` (`Year`, `Make`, `Model`) VALUES (@Year, @Make, @Model)";
 
+            _db.SaveData(sql, c);
+        }
+
+        public void UpdateCar(CarModel c)
+        {
+            string sql = "UPDATE `car_basic` SET `Year` = @Year, `Make` = @Make, `Model` = @Model WHERE `car_basic`.`CarID` = @CarID";
+            _db.SaveData(sql, c);
+        }
+
+        public void DeleteCar(CarModel c)
+        {
+            string sql = "DELETE FROM car_basic WHERE `car_basic`.`CarID` = @CarID";
             _db.SaveData(sql, c);
         }
 
@@ -36,14 +55,14 @@ namespace MySQLSep16.DataAccess
         }
 
 
-        public List<int> getYears()
+        public List<int> GetYears()
         {
             string sql = "SELECT DISTINCT Year FROM car_basic";
 
             List<int> years = _db.LoadData<int, dynamic>(sql, new { });
             return years;
         }
-        public List<string> getModels()
+        public List<string> GetModels()
         {
             string sql = "SELECT DISTINCT Model FROM car_basic";
 
@@ -51,7 +70,7 @@ namespace MySQLSep16.DataAccess
             return models;
         }
 
-        public List<string> getMake()
+        public List<string> GetMake()
         {
             string sql = "SELECT DISTINCT Make FROM car_basic";
 
