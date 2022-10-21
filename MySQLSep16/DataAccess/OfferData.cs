@@ -20,7 +20,7 @@ namespace MySQLSep16.DataAccess
 
         public OfferModel GetOfferByID(int id)
         {
-            string sql = "Select * FROM offers WHERE EngineID = @OfferID";
+            string sql = "Select * FROM offers WHERE OfferID = @OfferID";
             List<OfferModel> offer = _db.LoadData<OfferModel, dynamic>(sql, new { OfferID = id });
             return offer.FirstOrDefault(u => u.OfferID == id);
         }
@@ -34,11 +34,11 @@ namespace MySQLSep16.DataAccess
 
         public void UpdateOffer(OfferModel o)
         {
-            string sql = "UPDATE `offers` SET `BuyerID` = @BuyerID, `SellerID` = @SellerID, `CarIDID` = @SellerID, `AskP` = @AskP, `Accepted` = @Accepted WHERE `offers`.`OfferID` = @OfferID";
+            string sql = "UPDATE `offers` SET `BuyerID` = @BuyerID, `SellerID` = @SellerID, `CarID` = @SellerID, `AskP` = @AskP, `Accepted` = @Accepted WHERE `offers`.`OfferID` = @OfferID";
             _db.SaveData(sql, o);
         }
 
-        public void DeleteEngine(OfferModel o)
+        public void DeleteOffer(OfferModel o)
         {
             string sql = "DELETE FROM offers WHERE `offers`.`OfferID` = @OfferID";
             _db.SaveData(sql, o);

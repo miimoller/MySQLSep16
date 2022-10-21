@@ -6,6 +6,43 @@ using Org.BouncyCastle.Asn1.X509;
 using System.ComponentModel;
 
 
+
+OfferData offers = new OfferData();
+EngineData engines = new EngineData();
+
+OfferModel o = new OfferModel
+{
+    OfferID = 1,
+    BuyerID = 1,
+    SellerID=2,
+    CarID=3,
+    AskP=10000,
+    Accepted=false
+};
+EngineModel e = new EngineModel
+{
+   // EngineID = 1,
+    Name = "Vroom",
+    FuelScaling = 2
+};
+//engines.CreateEngine(e);
+e.Name = "VROOOOOOOM";
+
+//engines.UpdateEngine(e);
+//engines.DeleteEngine(e);
+Console.WriteLine(engines.GetEngineByID(3).Name);
+offers.CreateOffer(o);
+o.OfferID= 3;
+//offers.UpdateOffer(o);
+offers.DeleteOffer(o);
+Console.WriteLine(offers.GetOfferByID(1).CarID);
+
+
+
+
+
+
+/*
 BankData bankdata = new BankData();
 
 static void RunCarStuff()
@@ -118,9 +155,9 @@ foreach (BankModel tx in transactions)
         type = "Withdraw";
     }
     */
-    Console.WriteLine(tx);
+    //Console.WriteLine(tx);
 
-}
+//}
 //Console.WriteLine("Updating #2");
 //Console.WriteLine("Deleating #13");
 //Console.WriteLine("Making new tx");
