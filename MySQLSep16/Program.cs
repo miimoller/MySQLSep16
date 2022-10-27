@@ -1,10 +1,58 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using Google.Protobuf.WellKnownTypes;
+using MySQLSep16;
 using MySQLSep16.DataAccess;
 using MySQLSep16.Models;
 using Org.BouncyCastle.Asn1.X509;
 using System.ComponentModel;
 
+
+Console.BackgroundColor = ConsoleColor.DarkGreen;
+Console.Clear();
+/*
+string drive = "▄█ ▀ █▀▄ █▀█ █ █░█ █▀▀\r\n░█ ▄ █▄▀ █▀▄ █ ▀▄▀ ██▄";
+string marketPlace = "▀█ ▀ █▀▄▀█ ▄▀█ █▀█ █▄▀ █▀▀ ▀█▀ █▀█ █░░ ▄▀█ █▀▀ █▀▀\r\n█▄ ▄ █░▀░█ █▀█ █▀▄ █░█ ██▄ ░█░ █▀▀ █▄▄ █▀█ █▄▄ ██▄";
+string garage = "▀▀█ ▀ █▀▀ ▄▀█ █▀█ ▄▀█ █▀▀ █▀▀\r\n▄██ ▄ █▄█ █▀█ █▀▄ █▀█ █▄█ ██▄";
+string bank = "█░█ ▀ █▄▄ ▄▀█ █▄░█ █▄▀\r\n▀▀█ ▄ █▄█ █▀█ █░▀█ █░█";
+Console.WriteLine(drive+"\n\n"+marketPlace+"\n\n"+garage+"\n\n"+bank);
+int choice = 0;
+bool cont = false;
+while (!cont)
+{
+    Console.WriteLine("Enter int number of choice");
+    cont = Int32.TryParse(Console.ReadLine(), out choice);
+}
+switch (choice)
+{
+    case 1:
+        Console.WriteLine("Driving");
+        break;
+    case 2:
+        Console.WriteLine("MP");
+        break;
+    case 3:
+        Console.WriteLine("Garage");
+        break;
+    case 4:
+        Console.WriteLine("Bank");
+        break;
+    case 5:
+        Console.WriteLine("Soundtrack");
+        break;
+}
+
+Console.Clear();
+for (int i = 1; i < 30; i++)
+{
+    Console.WriteLine(i);
+}
+
+*/
+
+GP game = new GP();
+game.makeGame();
+
+/*
 CarData cardata = new CarData();
 BankData bankdata = new BankData();
 
@@ -86,7 +134,7 @@ while (add)
         checkcont = Boolean.TryParse(Console.ReadLine(), out add);
     }
 }
-*/
+
 
 CarModel car1 = new CarModel
 {
