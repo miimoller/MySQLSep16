@@ -1,4 +1,5 @@
-﻿using Org.BouncyCastle.Asn1.X509.SigI;
+﻿using MySQLSep16.Models;
+using Org.BouncyCastle.Asn1.X509.SigI;
 using Org.BouncyCastle.Crypto;
 using System;
 using System.Collections.Generic;
@@ -7,11 +8,17 @@ using System.Linq;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using System.Forms.KeyEventArgs;
+
+
 
 namespace MySQLSep16
 {
     internal class GP
     {
+        public string[] userCar { get; set; }
+        public int xPos { get; set; }
+        public int yPos { get; set; }
         public string[] car { get; set; }
         public string[] gasStation { get; set; }
         public string[] sponser { get; set; }
@@ -19,6 +26,7 @@ namespace MySQLSep16
 
         public GameSpace[,] gameBoard { get; set; }
         Random random = new Random();
+
 
         public void fillBoard()
         {
@@ -69,19 +77,42 @@ namespace MySQLSep16
             car[3] = "*--*";
             car[4] = "\\__/";
 
+            userCar = new string[5];
+            userCar[0] = "/--\\";
+            userCar[1] = "*--*";
+            userCar[2] = "|U |";
+            userCar[3] = "*--*";
+            userCar[4] = "\\vv/";
 
+        }
+        public void drive(CarModel c, System.Windows.Forms.KeyEventArgs e)
+        {
+            
         }
         public void makeGame(int min, int max, int width)
         {
+            
 
             makeModels();
  
             gameBoard = new GameSpace[random.Next(min, max), width];
+            xPos = width / 2;
+            yPos = gameBoard.GetLength(0)-10;
+
+            
 
             fillBoard();
 
+            printModel(userCar, xPos, yPos, 5, GameSpace.space.userCar);
+            
             randomizeModels(gasStation, 12, 50, 60, GameSpace.space.gas);
-            randomizeModels(sponser, 20, 80, 90, GameSpace.space.sponser);
+
+            randomizeModels(sponser, 20, 100, 120, GameSpace.space.sponserM);
+            randomizeModels(sponser, 20, 80, 100, GameSpace.space.sponserC);
+            randomizeModels(sponser, 20, 100, 120, GameSpace.space.sponserH);
+            randomizeModels(sponser, 20, 100, 120, GameSpace.space.sponserS);
+            randomizeModels(sponser, 20, 130, 140, GameSpace.space.sponserT);
+
             randomizeModels(car, 5, 10, 15, GameSpace.space.car);
             randomizeModels(person, 4, 20, 30, GameSpace.space.person);
 
@@ -122,7 +153,26 @@ namespace MySQLSep16
             {
                 for (int i = 0; i < s.Length; i++)
                 {
+                    if (type == GameSpace.space.sponserC)
+                    {
+                        s[2] = "|Chic-Fil-A|";
+                    }
+                    else if (type == GameSpace.space.sponserH)
+                    {
+                        s[2] = "|Houston   |";
+                    }
+                    else if (type == GameSpace.space.sponserS)
+                    {
+                        s[2] = "|Starbucks |";
+                    }
+                    else if (type == GameSpace.space.sponserT)
+                    {
+                        s[2] = "|TacoBell  |";
+                    }
+
                     char[] line = s[i].ToCharArray();
+                    
+                    
                     for (int j = 0; j < line.Length; j++)
                     {
 

@@ -8,7 +8,8 @@ namespace MySQLSep16
 {
     internal class GameSpace
     {
-        public enum space { empty, gas, sponser, car, person}
+        public enum gasType {Eighty7, Eighty8, Eighty9, Desel}
+        public enum space { empty, gas, sponserM, sponserC, sponserH, sponserS, sponserT, car, person, userCar}
         public char symbol { get; set; }
         public space symbolType { get; set; }
     }
