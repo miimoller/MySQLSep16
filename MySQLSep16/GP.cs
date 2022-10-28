@@ -71,12 +71,12 @@ namespace MySQLSep16
 
 
         }
-        public void makeGame()
+        public void makeGame(int min, int max, int width)
         {
 
             makeModels();
  
-            gameBoard = new GameSpace[random.Next(500, 1000), 100];
+            gameBoard = new GameSpace[random.Next(min, max), width];
 
             fillBoard();
 
@@ -86,7 +86,7 @@ namespace MySQLSep16
             randomizeModels(person, 4, 20, 30, GameSpace.space.person);
 
 
-            showScreen();
+            
         }
         public void randomizeModels(string[] model, int rad, int min, int max, GameSpace.space type)
         {
@@ -136,7 +136,7 @@ namespace MySQLSep16
                     }
 
                 }
-                Console.WriteLine("x:" + x + "y:" + y);
+               // Console.WriteLine("x:" + x + "y:" + y);
             }
         }
         public void showScreen()

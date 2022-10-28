@@ -50,7 +50,8 @@ for (int i = 1; i < 30; i++)
 */
 
 GP game = new GP();
-game.makeGame();
+game.makeGame(500,1000,100);
+game.showScreen();
 
 /*
 CarData cardata = new CarData();
