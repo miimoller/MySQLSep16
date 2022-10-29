@@ -48,10 +48,14 @@ for (int i = 1; i < 30; i++)
 }
 
 */
+CarModel c = new CarModel
+{
+    engineProp = 10
+};
 
 GP game = new GP();
 game.makeGame(500,1000,100);
-game.showScreen();
+game.drive(c);
 
 /*
 CarData cardata = new CarData();

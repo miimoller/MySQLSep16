@@ -1,4 +1,5 @@
 ﻿using MySQLSep16.Models;
+using System.Windows.Input;
 using Org.BouncyCastle.Asn1.X509.SigI;
 using Org.BouncyCastle.Crypto;
 using System;
@@ -8,8 +9,6 @@ using System.Linq;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using System.Forms.KeyEventArgs;
-
 
 
 namespace MySQLSep16
@@ -26,6 +25,7 @@ namespace MySQLSep16
 
         public GameSpace[,] gameBoard { get; set; }
         Random random = new Random();
+        
 
 
         public void fillBoard()
@@ -85,43 +85,120 @@ namespace MySQLSep16
             userCar[4] = "\\vv/";
 
         }
-        public void drive(CarModel c, System.Windows.Forms.KeyEventArgs e)
+        public void drive(CarModel c)
         {
+            for (int i = gameBoard.GetLength(0) - 51; i >= 0; i--)
+            {
+                if (Console.ReadKey().Key == ConsoleKey.W)
+                {
+                    yPos+=3;
+                }
+                if (Console.ReadKey().Key == ConsoleKey.A)
+                {
+                    xPos+=3;
+                }
+                if (Console.ReadKey().Key == ConsoleKey.S)
+                {
+                    yPos+=3;
+                }
+                if (Console.ReadKey().Key == ConsoleKey.D)
+                {
+                    yPos+=3;
+                }
+               // printModel(userCar, xPos, yPos, 5, GameSpace.space.userCar);
+
             
+                printSection(i, i + 50,xPos,yPos);
+                //printModel(userCar, xPos, yPos, 0, GameSpace.space.userCar);
+                
+                Console.ReadLine();
+                Console.Clear();
+                
+            }
         }
+        public void printSection(int x1, int x2, int x, int y)
+        {
+            GameSpace[,] tempSect = new GameSpace[x2-x1,gameBoard.GetLength(1)];
+            for (int i = x1; i < x2 + 1; i++)
+            {
+                for (int j=0;j<gameBoard.GetLength(1);j++)
+                tempSect[i,j] = gameBoard[i,j];
+            }
+            
+            for (int i = 0; i < tempSect.GetLength(0); i++)
+            {
+                for (int j = 0; j < tempSect.GetLength(1); j++)
+                {
+                    Console.Write(tempSect[i, j].symbol);
+                }
+                Console.WriteLine();
+            }
+
+            for (int i = 0; i < userCar.Length; i++)
+            {
+                char[] line = userCar[i].ToCharArray();
+
+                for (int j = 0; j < line.Length; j++)
+                {
+
+                    GameSpace temp = new GameSpace
+                    {
+                        symbol = line[j],
+                        symbolType = GameSpace.space.userCar
+                    };
+
+                    tempSect[y + i, x + j] = temp;
+                }
+
+            }
+
+
+        }
+
         public void makeGame(int min, int max, int width)
         {
-            
+
 
             makeModels();
- 
+
             gameBoard = new GameSpace[random.Next(min, max), width];
             xPos = width / 2;
-            yPos = gameBoard.GetLength(0)-10;
-
-            
-
+            yPos = 90;
             fillBoard();
 
-            printModel(userCar, xPos, yPos, 5, GameSpace.space.userCar);
-            
-            randomizeModels(gasStation, 12, 50, 60, GameSpace.space.gas);
+            for (int i = 0; i < gameBoard.GetLength(0); i++)
+            {
+                GameSpace boarder = new GameSpace
+                {
+                    symbol = '|',
+                    symbolType = GameSpace.space.boarder
+                };
+                gameBoard[i, 0] = boarder;
+                gameBoard[i, gameBoard.GetLength(1)-1] = boarder;
+            }
+                
 
-            randomizeModels(sponser, 20, 100, 120, GameSpace.space.sponserM);
-            randomizeModels(sponser, 20, 80, 100, GameSpace.space.sponserC);
-            randomizeModels(sponser, 20, 100, 120, GameSpace.space.sponserH);
-            randomizeModels(sponser, 20, 100, 120, GameSpace.space.sponserS);
-            randomizeModels(sponser, 20, 130, 140, GameSpace.space.sponserT);
 
-            randomizeModels(car, 5, 10, 15, GameSpace.space.car);
-            randomizeModels(person, 4, 20, 30, GameSpace.space.person);
+
+                randomizeModels(gasStation, 12, 50, 60, GameSpace.space.gas);
+
+                randomizeModels(sponser, 20, 100, 120, GameSpace.space.sponserM);
+                randomizeModels(sponser, 20, 80, 100, GameSpace.space.sponserC);
+                randomizeModels(sponser, 20, 100, 120, GameSpace.space.sponserH);
+                randomizeModels(sponser, 20, 100, 120, GameSpace.space.sponserS);
+                randomizeModels(sponser, 20, 130, 140, GameSpace.space.sponserT);
+
+                randomizeModels(car, 5, 10, 15, GameSpace.space.car);
+                randomizeModels(person, 4, 20, 30, GameSpace.space.person);
+
 
 
             
         }
+       
         public void randomizeModels(string[] model, int rad, int min, int max, GameSpace.space type)
         {
-            for (int i = 0; i < gameBoard.GetLength(0); i = i + random.Next(min, max))
+            for (int i = 0; i < gameBoard.GetLength(0)-10; i = i + random.Next(min, max))
             {
 
                 // int dy = random.Next(0, 20);
