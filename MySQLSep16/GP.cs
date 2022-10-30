@@ -3,6 +3,7 @@ using System.Windows.Input;
 using Org.BouncyCastle.Asn1.X509.SigI;
 using Org.BouncyCastle.Crypto;
 using System;
+
 using System.Collections.Generic;
 using System.Drawing.Printing;
 using System.Linq;
@@ -15,6 +16,10 @@ namespace MySQLSep16
 {
     internal class GP
     {
+        public bool hit { get; set; }
+        public int gasAmount { get; set; }
+        public int moneySpent { get; set; }
+        
         public string[] userCar { get; set; }
         public int xPos { get; set; }
         public int yPos { get; set; }
@@ -87,83 +92,163 @@ namespace MySQLSep16
         }
         public void drive(CarModel c)
         {
-            for (int i = gameBoard.GetLength(0) - 51; i >= 0; i--)
-            {
-                if (Console.ReadKey().Key == ConsoleKey.W)
-                {
-                    yPos+=3;
-                }
-                if (Console.ReadKey().Key == ConsoleKey.A)
-                {
-                    xPos+=3;
-                }
-                if (Console.ReadKey().Key == ConsoleKey.S)
-                {
-                    yPos+=3;
-                }
-                if (Console.ReadKey().Key == ConsoleKey.D)
-                {
-                    yPos+=3;
-                }
-               // printModel(userCar, xPos, yPos, 5, GameSpace.space.userCar);
-
             
-                printSection(i, i + 50,xPos,yPos);
-                //printModel(userCar, xPos, yPos, 0, GameSpace.space.userCar);
-                
-                Console.ReadLine();
-                Console.Clear();
+                for (int i = gameBoard.GetLength(0) - 51; i >= 0; i -= 5)
+                {
+                gasAmount -= 10;
+                if (!hit)
+                {
+                    if (gasAmount == 0)
+                    {
+                        Console.Clear();
+                        Console.WriteLine("You rad out of gas");
+                    }
+                    else
+                    {
+                        yPos += 1;
+
+                        if (Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.W)
+                        {
+                            yPos -= 2;
+                        }
+                        if (Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.A)
+                        {
+                            xPos -= 2;
+                        }
+                        if (Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.S)
+                        {
+                            yPos += 2;
+                        }
+                        if (Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.D)
+                        {
+                            yPos += 2;
+                        }
+                        // printModel(userCar, xPos, yPos, 5, GameSpace.space.userCar);
+
+
+                        printSection(i, i + 50, xPos, yPos);
+                        //printModel(userCar, xPos, yPos, 0, GameSpace.space.userCar);
+
+                        //Console.ReadLine();
+                        Thread.Sleep(300);
+                        Console.Clear();
+
+                    }
+                }
                 
             }
+            Console.WriteLine("You spent " + moneySpent);
         }
         public void printSection(int x1, int x2, int x, int y)
         {
-            GameSpace[,] tempSect = new GameSpace[x2-x1,gameBoard.GetLength(1)];
-            for (int i = x1; i < x2 + 1; i++)
+            try
             {
-                for (int j=0;j<gameBoard.GetLength(1);j++)
-                tempSect[i,j] = gameBoard[i,j];
+                Console.WriteLine("Total gas Amount:"+gasAmount);
+                GameSpace[,] tempSect = new GameSpace[x2 - x1, gameBoard.GetLength(1)];
+                for (int i = x1; i < x2; i++)
+                {
+                    for (int j = 0; j < gameBoard.GetLength(1); j++)
+                    {
+                        tempSect[i - x1, j] = gameBoard[i, j];
+                    }
+                }
+
+                for (int i = 0; i < userCar.Length; i++)
+                {
+                    char[] line = userCar[i].ToCharArray();
+
+                    for (int j = 0; j < line.Length; j++)
+                    {
+
+                        GameSpace temp = new GameSpace
+                        {
+                            symbol = line[j],
+                            symbolType = GameSpace.space.userCar
+                        };
+                        if (tempSect[y + i, x + j].symbolType == GameSpace.space.car)
+                        {
+                            Console.WriteLine("you hit a car");
+                            Console.Read();
+                            hit = true;
+                            break;
+                        }
+                        else if (tempSect[y + i, x + j].symbolType == GameSpace.space.person)
+                        {
+                            
+                            Console.WriteLine("You hit a person");
+                            Console.Read();
+                            hit = true;
+                            break;
+                        }
+                        else if (tempSect[y + i, x + j].symbolType == GameSpace.space.gas)
+                        {
+                            gasAmount += 5;
+                            moneySpent += 10;
+                        }
+                        else if (tempSect[y + i, x + j].symbolType == GameSpace.space.sponserS)
+                        {
+                            Console.WriteLine("You made it to starbucks, and got sponsered");
+                            Console.Read();
+                            hit = true;
+                        }
+                        else if (tempSect[y + i, x + j].symbolType == GameSpace.space.sponserT)
+                        {
+                            Console.WriteLine("You made it to tacobell, and got sponsered");
+                            Console.Read();
+                            hit = true;
+                        }
+                        else if (tempSect[y + i, x + j].symbolType == GameSpace.space.sponserM)
+                        {
+                            Console.WriteLine("You made it to mcdonalds, and got sponsered");
+                            Console.Read();
+                            hit = true;
+                        }
+                        else if (tempSect[y + i, x + j].symbolType == GameSpace.space.sponserC)
+                        {
+                            Console.WriteLine("You made it to chicfila, and got sponsered");
+                            Console.Read();
+                            hit = true;
+                        }
+                        else if (tempSect[y + i, x + j].symbolType == GameSpace.space.sponserH)
+                        {
+                            Console.WriteLine("You made it to houstons, and got sponsered");
+                            Console.Read();
+                            hit = true;
+                        }
+                        else { tempSect[y + i, x + j] = temp; }
+
+                        
+                    }
+
+                }
+
+                for (int i = 0; i < tempSect.GetLength(0); i++)
+                {
+                    for (int j = 0; j < tempSect.GetLength(1); j++)
+                    {
+                        Console.Write(tempSect[i, j].symbol);
+                    }
+                    Console.WriteLine();
+                }
+            }catch (Exception ex)
+            {
+                Console.WriteLine("You hit the boarder");
+                hit = true;
             }
             
-            for (int i = 0; i < tempSect.GetLength(0); i++)
-            {
-                for (int j = 0; j < tempSect.GetLength(1); j++)
-                {
-                    Console.Write(tempSect[i, j].symbol);
-                }
-                Console.WriteLine();
-            }
-
-            for (int i = 0; i < userCar.Length; i++)
-            {
-                char[] line = userCar[i].ToCharArray();
-
-                for (int j = 0; j < line.Length; j++)
-                {
-
-                    GameSpace temp = new GameSpace
-                    {
-                        symbol = line[j],
-                        symbolType = GameSpace.space.userCar
-                    };
-
-                    tempSect[y + i, x + j] = temp;
-                }
-
-            }
 
 
         }
 
         public void makeGame(int min, int max, int width)
         {
-
-
+            hit = false;
+            gasAmount = 100;
             makeModels();
 
             gameBoard = new GameSpace[random.Next(min, max), width];
             xPos = width / 2;
-            yPos = 90;
+            yPos = 33;
             fillBoard();
 
             for (int i = 0; i < gameBoard.GetLength(0); i++)
@@ -198,7 +283,7 @@ namespace MySQLSep16
        
         public void randomizeModels(string[] model, int rad, int min, int max, GameSpace.space type)
         {
-            for (int i = 0; i < gameBoard.GetLength(0)-10; i = i + random.Next(min, max))
+            for (int i = 0; i < gameBoard.GetLength(0)-15; i = i + random.Next(min, max))
             {
 
                 // int dy = random.Next(0, 20);
