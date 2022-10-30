@@ -242,6 +242,8 @@ namespace MySQLSep16
 
         public void makeGame(int min, int max, int width)
         {
+            Console.SetWindowSize(100, 44);
+            
             hit = false;
             gasAmount = 100;
             makeModels();
