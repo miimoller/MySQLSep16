@@ -92,36 +92,43 @@ namespace MySQLSep16
         }
         public void drive(CarModel c)
         {
+            gasAmount = (int)(c.engineProp)*10;
             
                 for (int i = gameBoard.GetLength(0) - 51; i >= 0; i -= 5)
                 {
-                gasAmount -= 10;
+                gasAmount -= 5;
                 if (!hit)
                 {
-                    if (gasAmount == 0)
+                    if (gasAmount < 0)
                     {
                         Console.Clear();
-                        Console.WriteLine("You rad out of gas");
+                        Console.WriteLine("You ran out of gas");
+                        Console.Read();
                     }
                     else
                     {
-                        yPos += 1;
-
+                        Console.Clear();
+                        yPos += 3;
+                        
                         if (Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.W)
                         {
-                            yPos -= 2;
+                            Console.WriteLine("Moving up");
+                            yPos -= 5;
                         }
                         if (Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.A)
                         {
-                            xPos -= 2;
+                            xPos -= 8;
+                            Console.WriteLine("Moving left");
                         }
                         if (Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.S)
                         {
-                            yPos += 2;
+                            yPos += 5;
+                            Console.WriteLine("Moving down");
                         }
                         if (Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.D)
                         {
-                            yPos += 2;
+                            xPos += 8;
+                            Console.WriteLine("Moving right");
                         }
                         // printModel(userCar, xPos, yPos, 5, GameSpace.space.userCar);
 
@@ -134,6 +141,10 @@ namespace MySQLSep16
                         Console.Clear();
 
                     }
+                }
+                else
+                {
+                    i = -1;
                 }
                 
             }
@@ -242,10 +253,14 @@ namespace MySQLSep16
 
         public void makeGame(int min, int max, int width)
         {
-            Console.SetWindowSize(100, 44);
+            
+            Console.SetWindowPosition(0, 0);
+            Console.MoveBufferArea(0,0,0,0,0,0);
+            Console.SetWindowSize(100,50);
+            
             
             hit = false;
-            gasAmount = 100;
+            gasAmount = 200;
             makeModels();
 
             gameBoard = new GameSpace[random.Next(min, max), width];
@@ -285,7 +300,7 @@ namespace MySQLSep16
        
         public void randomizeModels(string[] model, int rad, int min, int max, GameSpace.space type)
         {
-            for (int i = 0; i < gameBoard.GetLength(0)-15; i = i + random.Next(min, max))
+            for (int i = 0; i < gameBoard.GetLength(0)-20; i = i + random.Next(min, max))
             {
 
                 // int dy = random.Next(0, 20);

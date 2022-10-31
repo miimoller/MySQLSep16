@@ -50,7 +50,7 @@ for (int i = 1; i < 30; i++)
 */
 CarModel c = new CarModel
 {
-    engineProp = 10
+    engineProp = 10000
 };
 
 GP game = new GP();
