@@ -16,24 +16,25 @@ namespace MySQLSep16
 {
     internal class GP
     {
-        public bool hit { get; set; }
-        public int gasAmount { get; set; }
-        public int moneySpent { get; set; }
+        public static bool hit { get; set; }
+        public static int gasAmount { get; set; }
+        public static int moneySpent { get; set; }
         
-        public string[] userCar { get; set; }
-        public int xPos { get; set; }
-        public int yPos { get; set; }
-        public string[] car { get; set; }
-        public string[] gasStation { get; set; }
-        public string[] sponser { get; set; }
-        public string[] person { get; set; }
+        public static string[] userCar { get; set; }
+        public static int xPos { get; set; }
+        public static int yPos { get; set; }
+        public static string[] car { get; set; }
+        public static string[] gasStation { get; set; }
+        public static string[] sponser { get; set; }
+        public static string[] person { get; set; }
 
-        public GameSpace[,] gameBoard { get; set; }
-        Random random = new Random();
+        public static GameSpace[,] gameBoard { get; set; }
+        static Random random = new Random();
+        public static CarModel drivingCar { get; set; }
         
 
 
-        public void fillBoard()
+        public static void fillBoard()
         {
             GameSpace emptySpace = new GameSpace
             {
@@ -50,7 +51,7 @@ namespace MySQLSep16
             }
         }
 
-        public void makeModels()
+        public static void makeModels()
         {
             gasStation = new string[7];
             gasStation[0] = "_________";
@@ -90,12 +91,12 @@ namespace MySQLSep16
             userCar[4] = "\\vv/";
 
         }
-        public void drive(CarModel c)
+        public static void drive()
         {
-            gasAmount = (int)(c.engineProp)*10;
-            
-                for (int i = gameBoard.GetLength(0) - 51; i >= 0; i -= 5)
-                {
+            gasAmount = (int)(drivingCar.engineProp) * 10;
+
+            for (int i = gameBoard.GetLength(0) - 51; i >= 0; i -= 5)
+            {
                 gasAmount -= 5;
                 if (!hit)
                 {
@@ -109,27 +110,32 @@ namespace MySQLSep16
                     {
                         Console.Clear();
                         yPos += 3;
-                        
-                        if (Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.W)
+
+                        if (Console.KeyAvailable && (Console.ReadKey(true).Key == ConsoleKey.W || Console.ReadKey(true).Key == ConsoleKey.UpArrow))
                         {
+                            //Console.Clear();
                             Console.WriteLine("Moving up");
                             yPos -= 5;
                         }
-                        if (Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.A)
+                        if (Console.KeyAvailable && (Console.ReadKey(true).Key == ConsoleKey.A || Console.ReadKey(true).Key == ConsoleKey.LeftArrow))
                         {
+                           // Console.Clear();
                             xPos -= 8;
                             Console.WriteLine("Moving left");
                         }
-                        if (Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.S)
+                        if (Console.KeyAvailable && (Console.ReadKey(true).Key == ConsoleKey.D || Console.ReadKey(true).Key == ConsoleKey.RightArrow))
                         {
-                            yPos += 5;
-                            Console.WriteLine("Moving down");
-                        }
-                        if (Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.D)
-                        {
+                            //Console.Clear();
                             xPos += 8;
                             Console.WriteLine("Moving right");
                         }
+                        if (Console.KeyAvailable && (Console.ReadKey(true).Key == ConsoleKey.S || Console.ReadKey(true).Key == ConsoleKey.DownArrow))
+                        {
+                           // Console.Clear();
+                            yPos += 5;
+                            Console.WriteLine("Moving down");
+                        }
+                        
                         // printModel(userCar, xPos, yPos, 5, GameSpace.space.userCar);
 
 
@@ -146,11 +152,13 @@ namespace MySQLSep16
                 {
                     i = -1;
                 }
-                
+
             }
+            Console.Clear();
             Console.WriteLine("You spent " + moneySpent);
+            
         }
-        public void printSection(int x1, int x2, int x, int y)
+        public static void printSection(int x1, int x2, int x, int y)
         {
             try
             {
@@ -251,12 +259,13 @@ namespace MySQLSep16
 
         }
 
-        public void makeGame(int min, int max, int width)
+        public static void makeGame(CarModel c, int min, int max, int width)
         {
-            
+            drivingCar = c;   
             Console.SetWindowPosition(0, 0);
-            Console.MoveBufferArea(0,0,0,0,0,0);
-            Console.SetWindowSize(100,50);
+            //aConsole.MoveBufferArea(0,0,0,0,0,0);
+          Console.SetWindowSize(100,50);
+            //Console
             
             
             hit = false;
@@ -298,7 +307,7 @@ namespace MySQLSep16
             
         }
        
-        public void randomizeModels(string[] model, int rad, int min, int max, GameSpace.space type)
+        public static void randomizeModels(string[] model, int rad, int min, int max, GameSpace.space type)
         {
             for (int i = 0; i < gameBoard.GetLength(0)-20; i = i + random.Next(min, max))
             {
@@ -311,7 +320,7 @@ namespace MySQLSep16
 
             }
         }
-        public bool checkRadius(int x, int y, int r)
+        public static bool checkRadius(int x, int y, int r)
         {
             for (int i = x - r; i < x + r; i++)
             {
@@ -325,7 +334,7 @@ namespace MySQLSep16
             }
             return true;
         }
-        public void printModel(string[] s, int x, int y, int r, GameSpace.space type)
+        public static void printModel(string[] s, int x, int y, int r, GameSpace.space type)
         {
 
             if (checkRadius(x,y,r))
@@ -368,7 +377,7 @@ namespace MySQLSep16
                // Console.WriteLine("x:" + x + "y:" + y);
             }
         }
-        public void showScreen()
+        public static void showScreen()
         {
             for (int i = 0; i < gameBoard.GetLength(0); i++)
             {

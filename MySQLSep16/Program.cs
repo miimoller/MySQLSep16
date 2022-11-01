@@ -7,6 +7,7 @@ using Org.BouncyCastle.Asn1.X509;
 using System.ComponentModel;
 
 
+
 Console.BackgroundColor = ConsoleColor.DarkGreen;
 Console.Clear();
 /*
@@ -53,9 +54,10 @@ CarModel c = new CarModel
     engineProp = 10000
 };
 
-GP game = new GP();
-game.makeGame(500,1000,100);
-game.drive(c);
+
+GP.makeGame(c, 500,1000,100);
+GP.drive();
+
 
 /*
 CarData cardata = new CarData();
