@@ -3,7 +3,7 @@ using System.Windows.Input;
 using Org.BouncyCastle.Asn1.X509.SigI;
 using Org.BouncyCastle.Crypto;
 using System;
-
+using MySQLSep16.DataAccess;
 using System.Collections.Generic;
 using System.Drawing.Printing;
 using System.Linq;
@@ -12,14 +12,14 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace MySQLSep16
+namespace MySQLSep16.GamePlay
 {
     internal class GP
     {
         public static bool hit { get; set; }
         public static int gasAmount { get; set; }
         public static int moneySpent { get; set; }
-        
+
         public static string[] userCar { get; set; }
         public static int xPos { get; set; }
         public static int yPos { get; set; }
@@ -31,9 +31,9 @@ namespace MySQLSep16
         public static GameSpace[,] gameBoard { get; set; }
         static Random random = new Random();
         public static CarModel drivingCar { get; set; }
+        /*
         
-
-
+        */
         public static void fillBoard()
         {
             GameSpace emptySpace = new GameSpace
@@ -62,7 +62,7 @@ namespace MySQLSep16
             gasStation[5] = "|_______|/";
             gasStation[6] = "|_______|";
 
-            sponser=new string[7];
+            sponser = new string[7];
             sponser[0] = "____________";
             sponser[1] = "|          |";
             sponser[2] = "|McDonalds |";
@@ -93,7 +93,10 @@ namespace MySQLSep16
         }
         public static void drive()
         {
-            gasAmount = (int)(drivingCar.engineProp) * 10;
+            ConsoleKey input = ConsoleKey.W;
+            gasAmount = (int)drivingCar.fuelCapacity * 10;
+
+
 
             for (int i = gameBoard.GetLength(0) - 51; i >= 0; i -= 5)
             {
@@ -111,31 +114,44 @@ namespace MySQLSep16
                         Console.Clear();
                         yPos += 3;
 
-                        if (Console.KeyAvailable && (Console.ReadKey(true).Key == ConsoleKey.W || Console.ReadKey(true).Key == ConsoleKey.UpArrow))
+
+                        if (Console.KeyAvailable)
+                        {
+                            Console.Clear();
+
+                            input = Console.ReadKey(true).Key;
+                        }
+
+                        if (input == ConsoleKey.W || input == ConsoleKey.UpArrow)
                         {
                             //Console.Clear();
-                            Console.WriteLine("Moving up");
+                            // Console.WriteLine("Moving up");
+                            //Console.BackgroundColor = ConsoleColor.Red;
                             yPos -= 5;
                         }
-                        if (Console.KeyAvailable && (Console.ReadKey(true).Key == ConsoleKey.A || Console.ReadKey(true).Key == ConsoleKey.LeftArrow))
+                        if (input == ConsoleKey.A || input == ConsoleKey.LeftArrow)
                         {
-                           // Console.Clear();
+                            // Console.Clear();
                             xPos -= 8;
-                            Console.WriteLine("Moving left");
+                            // Console.BackgroundColor = ConsoleColor.DarkYellow;
+                            // Console.WriteLine("Moving left");
                         }
-                        if (Console.KeyAvailable && (Console.ReadKey(true).Key == ConsoleKey.D || Console.ReadKey(true).Key == ConsoleKey.RightArrow))
+                        if (input == ConsoleKey.D || input == ConsoleKey.RightArrow)
                         {
                             //Console.Clear();
                             xPos += 8;
-                            Console.WriteLine("Moving right");
+                            // Console.BackgroundColor = ConsoleColor.Green;
+                            // Console.WriteLine("Moving right");
                         }
-                        if (Console.KeyAvailable && (Console.ReadKey(true).Key == ConsoleKey.S || Console.ReadKey(true).Key == ConsoleKey.DownArrow))
+                        if (input == ConsoleKey.S || input == ConsoleKey.DownArrow)
                         {
-                           // Console.Clear();
+                            // Console.Clear();
                             yPos += 5;
-                            Console.WriteLine("Moving down");
+                            // Console.BackgroundColor = ConsoleColor.Blue;
+                            // Console.WriteLine("Moving down");
+
                         }
-                        
+
                         // printModel(userCar, xPos, yPos, 5, GameSpace.space.userCar);
 
 
@@ -145,24 +161,26 @@ namespace MySQLSep16
                         //Console.ReadLine();
                         Thread.Sleep(300);
                         Console.Clear();
-
                     }
+
                 }
+
                 else
                 {
                     i = -1;
                 }
 
+
             }
             Console.Clear();
             Console.WriteLine("You spent " + moneySpent);
-            
+
         }
         public static void printSection(int x1, int x2, int x, int y)
         {
             try
             {
-                Console.WriteLine("Total gas Amount:"+gasAmount);
+                Console.WriteLine("Total gas Amount:" + gasAmount);
                 GameSpace[,] tempSect = new GameSpace[x2 - x1, gameBoard.GetLength(1)];
                 for (int i = x1; i < x2; i++)
                 {
@@ -193,7 +211,7 @@ namespace MySQLSep16
                         }
                         else if (tempSect[y + i, x + j].symbolType == GameSpace.space.person)
                         {
-                            
+
                             Console.WriteLine("You hit a person");
                             Console.Read();
                             hit = true;
@@ -236,7 +254,7 @@ namespace MySQLSep16
                         }
                         else { tempSect[y + i, x + j] = temp; }
 
-                        
+
                     }
 
                 }
@@ -249,25 +267,26 @@ namespace MySQLSep16
                     }
                     Console.WriteLine();
                 }
-            }catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 Console.WriteLine("You hit the boarder");
                 hit = true;
             }
-            
+
 
 
         }
 
         public static void makeGame(CarModel c, int min, int max, int width)
         {
-            drivingCar = c;   
+            drivingCar = c;
             Console.SetWindowPosition(0, 0);
             //aConsole.MoveBufferArea(0,0,0,0,0,0);
-          Console.SetWindowSize(100,50);
+            Console.SetWindowSize(100, 50);
             //Console
-            
-            
+
+
             hit = false;
             gasAmount = 200;
             makeModels();
@@ -285,31 +304,31 @@ namespace MySQLSep16
                     symbolType = GameSpace.space.boarder
                 };
                 gameBoard[i, 0] = boarder;
-                gameBoard[i, gameBoard.GetLength(1)-1] = boarder;
+                gameBoard[i, gameBoard.GetLength(1) - 1] = boarder;
             }
-                
 
 
 
-                randomizeModels(gasStation, 12, 50, 60, GameSpace.space.gas);
 
-                randomizeModels(sponser, 20, 100, 120, GameSpace.space.sponserM);
-                randomizeModels(sponser, 20, 80, 100, GameSpace.space.sponserC);
-                randomizeModels(sponser, 20, 100, 120, GameSpace.space.sponserH);
-                randomizeModels(sponser, 20, 100, 120, GameSpace.space.sponserS);
-                randomizeModels(sponser, 20, 130, 140, GameSpace.space.sponserT);
+            randomizeModels(gasStation, 12, 50, 60, GameSpace.space.gas);
 
-                randomizeModels(car, 5, 10, 15, GameSpace.space.car);
-                randomizeModels(person, 4, 20, 30, GameSpace.space.person);
+            randomizeModels(sponser, 20, 100, 120, GameSpace.space.sponserM);
+            randomizeModels(sponser, 20, 80, 100, GameSpace.space.sponserC);
+            randomizeModels(sponser, 20, 100, 120, GameSpace.space.sponserH);
+            randomizeModels(sponser, 20, 100, 120, GameSpace.space.sponserS);
+            randomizeModels(sponser, 20, 130, 140, GameSpace.space.sponserT);
+
+            randomizeModels(car, 5, 10, 15, GameSpace.space.car);
+            randomizeModels(person, 4, 20, 30, GameSpace.space.person);
 
 
 
-            
+
         }
-       
+
         public static void randomizeModels(string[] model, int rad, int min, int max, GameSpace.space type)
         {
-            for (int i = 0; i < gameBoard.GetLength(0)-20; i = i + random.Next(min, max))
+            for (int i = 0; i < gameBoard.GetLength(0) - 20; i = i + random.Next(min, max))
             {
 
                 // int dy = random.Next(0, 20);
@@ -326,7 +345,7 @@ namespace MySQLSep16
             {
                 for (int j = y - r; j < y + r; j++)
                 {
-                    if (i<0 || j<0 || x+r+1>gameBoard.GetLength(1) || y+r+1>gameBoard.GetLength(0) || gameBoard[j,i].symbol!=' ')
+                    if (i < 0 || j < 0 || x + r + 1 > gameBoard.GetLength(1) || y + r + 1 > gameBoard.GetLength(0) || gameBoard[j, i].symbol != ' ')
                     {
                         return false;
                     }
@@ -337,7 +356,7 @@ namespace MySQLSep16
         public static void printModel(string[] s, int x, int y, int r, GameSpace.space type)
         {
 
-            if (checkRadius(x,y,r))
+            if (checkRadius(x, y, r))
             {
                 for (int i = 0; i < s.Length; i++)
                 {
@@ -359,8 +378,8 @@ namespace MySQLSep16
                     }
 
                     char[] line = s[i].ToCharArray();
-                    
-                    
+
+
                     for (int j = 0; j < line.Length; j++)
                     {
 
@@ -374,7 +393,7 @@ namespace MySQLSep16
                     }
 
                 }
-               // Console.WriteLine("x:" + x + "y:" + y);
+                // Console.WriteLine("x:" + x + "y:" + y);
             }
         }
         public static void showScreen()
@@ -390,5 +409,5 @@ namespace MySQLSep16
         }
     }
 
-   }
+}
 

@@ -8,6 +8,9 @@ namespace MySQLSep16.Models
 {
     internal class CarModel
     {
-        public double engineProp { get; set; }
+        public int ModelID { get; set; }
+        public string ModelName { get; set; }
+        public double ModelMPG { get; set; }
+        public double fuelCapacity { get; set; }
     }
 }

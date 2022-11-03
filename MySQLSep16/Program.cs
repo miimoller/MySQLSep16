@@ -2,11 +2,11 @@
 using Google.Protobuf.WellKnownTypes;
 using MySQLSep16;
 using MySQLSep16.DataAccess;
+using MySQLSep16.GamePlay;
 using MySQLSep16.Models;
 using Org.BouncyCastle.Asn1.X509;
 using System.ComponentModel;
-
-
+using System.Net.Http.Headers;
 
 Console.BackgroundColor = ConsoleColor.DarkGreen;
 Console.Clear();
@@ -49,13 +49,18 @@ for (int i = 1; i < 30; i++)
 }
 
 */
-CarModel c = new CarModel
+CarData cdata = new CarData();
+
+List<CarModel> cars = cdata.getAllCars();
+
+foreach (CarModel x in cars)
 {
-    engineProp = 10000
-};
+    Console.WriteLine();
+}
+Console.WriteLine();
 
 
-GP.makeGame(c, 500,1000,100);
+GP.makeGame(cdata.GetCarByID(UIHelperMethods.checkForInt("Enter a valid ID of car you wanna drive")), 500,1000,100);
 GP.drive();
 
 
