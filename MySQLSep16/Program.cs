@@ -48,7 +48,7 @@ for (int i = 1; i < 30; i++)
     Console.WriteLine(i);
 }
 
-*/
+
 int userID = 0;
 CarData cdata = new CarData();
 
@@ -58,11 +58,20 @@ foreach (CarModel x in cars)
 {
     Console.WriteLine();
 }
+*/
 Console.WriteLine();
+CarModelsModel m = new CarModelsModel
+{
+    ModelID=1,
+    fuelCapacity = 50
+};
+CarModel c = new CarModel
+{
+    fgn_ModelID = 1
+};
 
-
-GP.makeGame(cdata.GetCarByID(UIHelperMethods.checkForInt("Enter a valid ID of car you wanna drive")), 500,1000,100);
-GP.drive();
+GP.makeGame(c, 800,1000,100);
+int outcome=GP.drive();
 
 
 /*

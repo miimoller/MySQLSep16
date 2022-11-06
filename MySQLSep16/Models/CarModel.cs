@@ -16,5 +16,10 @@ namespace MySQLSep16.Models
         public int sponsor { get; set; }
         public int userID { get; set; }
         public Boolean Finance { get; set; }
+        
+        public string toString()
+        {
+            return $"CarID: {CarID}, Brand: {Brand}";
+        }
     }
 }

@@ -7,44 +7,37 @@ using System.Threading.Tasks;
 
 namespace MySQLSep16.DataAccess
 {
-    internal class CarData
+    internal class CarModelData
     {
         private readonly ISqlDataAccess _db = new SqlDataAccess();
 
-        public List<CarModel> getAllCars()
+        public List<CarModelsModel> getAllCarModels()
         {
             string sql = "SELECT * FROM carmodels";
-            List<CarModel> cars = _db.LoadData<CarModel, dynamic>(sql, new { });
+            List<CarModelsModel> cars = _db.LoadData<CarModelsModel, dynamic>(sql, new { });
             return cars;
         }
 
-        public CarModel GetCarByID(int id)
+        public CarModelsModel GetCarByID(int id)
         {
             string sql = "SELECT * FROM carmodels WHERE ModelID = @ModelID";
-            List<CarModel> car = _db.LoadData<CarModel, dynamic>(sql, new { CarID = id });
-            return getAllCars().FirstOrDefault(u => u.CarID == id);
+            List<CarModelsModel> car = _db.LoadData<CarModelsModel, dynamic>(sql, new { ModelID = id });
+            return getAllCarModels().FirstOrDefault(u => u.ModelID == id);
         }
 
-        public List<CarModel> GetCarsByUserID(int userID)
-        {
-            string sql = "SELECT * FROM carmodels WHERE UserID = @UserID";
-            List<CarModel> cars = _db.LoadData<CarModel, dynamic>(sql, new { userID = userID });
-            return cars;
-        }
-
-        public void CreateCar(CarModel c)
+        public void CreateCar(CarModelsModel c)
         {
             string sql = "INSERT INTO `carmodels` (`ModelName`, `ModelMPG`, `fuelCapacity`) VALUES (@ModelName, @ModelMPG, @fuelCapacity)";
             _db.SaveData(sql, c);
         }
 
-        public void UpdateCar(CarModel c)
+        public void UpdateCar(CarModelsModel c)
         {
             string sql = "UPDATE `carmodels` SET `ModelName` = @ModelName, 'ModelMPG' = @ModelMPG, 'fuelCapacity' = @fuelCapacity, 2023' WHERE `carmodels`.`ModelID` = ModelID";
             _db.SaveData(sql, c);
         }
 
-        public void DeleteCar(CarModel c)
+        public void DeleteCar(CarModelsModel c)
         {
             string sql = "DELETE FROM `carmodels` WHERE 'carmodels'.'ModelID' = @ModelID";
         }

@@ -30,6 +30,8 @@ namespace MySQLSep16.GamePlay
 
         public static GameSpace[,] gameBoard { get; set; }
         static Random random = new Random();
+
+        public static int exitCode { get; set; }
         public static CarModel drivingCar { get; set; }
         /*
         
@@ -91,10 +93,11 @@ namespace MySQLSep16.GamePlay
             userCar[4] = "\\vv/";
 
         }
-        public static void drive()
+        public static int drive()
         {
             ConsoleKey input = ConsoleKey.W;
-            gasAmount = (int)drivingCar.fuelCapacity * 10;
+ //******add data access to get fuel scalling from 2ndary key from carModelsModel**
+            gasAmount = (int)50 * 10;
 
 
 
@@ -106,8 +109,8 @@ namespace MySQLSep16.GamePlay
                     if (gasAmount < 0)
                     {
                         Console.Clear();
-                        Console.WriteLine("You ran out of gas");
-                        Console.Read();
+                        
+                        exitCode = 0;
                     }
                     else
                     {
@@ -155,12 +158,18 @@ namespace MySQLSep16.GamePlay
                         // printModel(userCar, xPos, yPos, 5, GameSpace.space.userCar);
 
 
-                        printSection(i, i + 50, xPos, yPos);
+                        printSection(i, i + 40, xPos, yPos);
                         //printModel(userCar, xPos, yPos, 0, GameSpace.space.userCar);
 
                         //Console.ReadLine();
                         Thread.Sleep(300);
                         Console.Clear();
+                        if (exitCode != -1)
+                        {
+
+//************add removing money spent for user balance
+                            return exitCode;
+                        }
                     }
 
                 }
@@ -172,15 +181,17 @@ namespace MySQLSep16.GamePlay
 
 
             }
-            Console.Clear();
-            Console.WriteLine("You spent " + moneySpent);
+            
+            return -1;
 
         }
         public static void printSection(int x1, int x2, int x, int y)
         {
             try
             {
-                Console.WriteLine("Total gas Amount:" + gasAmount);
+                Console.WriteLine("Total gas Amount: " + gasAmount);
+                Console.WriteLine("Total money spent: "+moneySpent);
+                //Console.WriteLine("Number of rows"+(x2-x1));
                 GameSpace[,] tempSect = new GameSpace[x2 - x1, gameBoard.GetLength(1)];
                 for (int i = x1; i < x2; i++)
                 {
@@ -204,17 +215,15 @@ namespace MySQLSep16.GamePlay
                         };
                         if (tempSect[y + i, x + j].symbolType == GameSpace.space.car)
                         {
-                            Console.WriteLine("you hit a car");
-                            Console.Read();
+                           
                             hit = true;
+                            exitCode = 6;
                             break;
                         }
                         else if (tempSect[y + i, x + j].symbolType == GameSpace.space.person)
                         {
-
-                            Console.WriteLine("You hit a person");
-                            Console.Read();
                             hit = true;
+                            exitCode = 7;
                             break;
                         }
                         else if (tempSect[y + i, x + j].symbolType == GameSpace.space.gas)
@@ -224,32 +233,32 @@ namespace MySQLSep16.GamePlay
                         }
                         else if (tempSect[y + i, x + j].symbolType == GameSpace.space.sponserS)
                         {
-                            Console.WriteLine("You made it to starbucks, and got sponsered");
-                            Console.Read();
+                            
+                            exitCode = 1;
                             hit = true;
                         }
                         else if (tempSect[y + i, x + j].symbolType == GameSpace.space.sponserT)
                         {
-                            Console.WriteLine("You made it to tacobell, and got sponsered");
-                            Console.Read();
+                            
+                            exitCode = 2;
                             hit = true;
                         }
                         else if (tempSect[y + i, x + j].symbolType == GameSpace.space.sponserM)
                         {
-                            Console.WriteLine("You made it to mcdonalds, and got sponsered");
-                            Console.Read();
+                            
+                            exitCode = 3;
                             hit = true;
                         }
                         else if (tempSect[y + i, x + j].symbolType == GameSpace.space.sponserC)
                         {
-                            Console.WriteLine("You made it to chicfila, and got sponsered");
-                            Console.Read();
+                           
+                            exitCode = 4;
                             hit = true;
                         }
                         else if (tempSect[y + i, x + j].symbolType == GameSpace.space.sponserH)
                         {
-                            Console.WriteLine("You made it to houstons, and got sponsered");
-                            Console.Read();
+                          
+                            exitCode = 5;
                             hit = true;
                         }
                         else { tempSect[y + i, x + j] = temp; }
@@ -265,12 +274,14 @@ namespace MySQLSep16.GamePlay
                     {
                         Console.Write(tempSect[i, j].symbol);
                     }
+                    if (i!=tempSect.GetLength(0)-1)
                     Console.WriteLine();
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("You hit the boarder");
+                exitCode = 8;
                 hit = true;
             }
 
@@ -280,11 +291,12 @@ namespace MySQLSep16.GamePlay
 
         public static void makeGame(CarModel c, int min, int max, int width)
         {
+            exitCode = -1;
             drivingCar = c;
             Console.SetWindowPosition(0, 0);
             //aConsole.MoveBufferArea(0,0,0,0,0,0);
-            Console.SetWindowSize(100, 50);
-            //Console
+            //Console.SetWindowSize(100, 100);
+            
 
 
             hit = false;
@@ -320,15 +332,24 @@ namespace MySQLSep16.GamePlay
 
             randomizeModels(car, 5, 10, 15, GameSpace.space.car);
             randomizeModels(person, 4, 20, 30, GameSpace.space.person);
+            theHolyGrail(sponser);
 
 
 
+        }
+        public static void theHolyGrail(string[]model)
+        {
+            printModel(model, 0, 50,0, GameSpace.space.sponserS);
+            printModel(model, 20, 50, 0, GameSpace.space.sponserT);
+            printModel(model, 40, 50, 0, GameSpace.space.sponserH);
+            printModel(model, 60, 50, 0, GameSpace.space.sponserM);
+            printModel(model, 80, 50, 0, GameSpace.space.sponserC);
 
         }
 
         public static void randomizeModels(string[] model, int rad, int min, int max, GameSpace.space type)
         {
-            for (int i = 0; i < gameBoard.GetLength(0) - 20; i = i + random.Next(min, max))
+            for (int i = 20; i < gameBoard.GetLength(0) - 50; i = i + random.Next(min, max))
             {
 
                 // int dy = random.Next(0, 20);
