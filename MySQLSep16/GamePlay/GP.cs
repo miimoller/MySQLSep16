@@ -17,7 +17,7 @@ namespace MySQLSep16.GamePlay
     internal class GP
     {
         public static bool hit { get; set; }
-        public static int gasAmount { get; set; }
+        public static double gasAmount { get; set; }
         public static int moneySpent { get; set; }
 
         public static string[] userCar { get; set; }
@@ -33,6 +33,8 @@ namespace MySQLSep16.GamePlay
 
         public static int exitCode { get; set; }
         public static CarModel drivingCar { get; set; }
+
+        
         /*
         
         */
@@ -95,9 +97,12 @@ namespace MySQLSep16.GamePlay
         }
         public static int drive()
         {
+            CarModelData carmodeldata = new CarModelData();
             ConsoleKey input = ConsoleKey.W;
- //******add data access to get fuel scalling from 2ndary key from carModelsModel**
-            gasAmount = (int)50 * 10;
+            //******add data access to get fuel scalling from 2ndary key from carModelsModel**
+            gasAmount = carmodeldata.GetCarByID(drivingCar.fgn_ModelID).fuelCapacity*50;
+
+
 
 
 
@@ -109,7 +114,7 @@ namespace MySQLSep16.GamePlay
                     if (gasAmount < 0)
                     {
                         Console.Clear();
-                        
+
                         exitCode = 0;
                     }
                     else
@@ -167,7 +172,7 @@ namespace MySQLSep16.GamePlay
                         if (exitCode != -1)
                         {
 
-//************add removing money spent for user balance
+                            //************add removing money spent for user balance
                             return exitCode;
                         }
                     }
@@ -179,12 +184,12 @@ namespace MySQLSep16.GamePlay
                     i = -1;
                 }
 
-
+                
             }
-            
             return -1;
-
         }
+
+        
         public static void printSection(int x1, int x2, int x, int y)
         {
             try
@@ -217,7 +222,7 @@ namespace MySQLSep16.GamePlay
                         {
                            
                             hit = true;
-                            exitCode = 6;
+                            exitCode = 8;
                             break;
                         }
                         else if (tempSect[y + i, x + j].symbolType == GameSpace.space.person)

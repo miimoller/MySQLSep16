@@ -59,19 +59,8 @@ foreach (CarModel x in cars)
     Console.WriteLine();
 }
 */
-Console.WriteLine();
-CarModelsModel m = new CarModelsModel
-{
-    ModelID=1,
-    fuelCapacity = 50
-};
-CarModel c = new CarModel
-{
-    fgn_ModelID = 1
-};
-
-GP.makeGame(c, 800,1000,100);
-int outcome=GP.drive();
+UI ui = new UI();
+ui.showMPMain();
 
 
 /*

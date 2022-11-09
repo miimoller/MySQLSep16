@@ -1,12 +1,16 @@
-﻿using MySQLSep16.DataAccess;
+﻿using Google.Protobuf.WellKnownTypes;
+using MySQLSep16.DataAccess;
 using MySQLSep16.GamePlay;
 using MySQLSep16.Models;
+using MySqlX.XDevAPI.Relational;
 using Org.BouncyCastle.Asn1;
+using Spectre.Console;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Table = Spectre.Console.Table;
 
 namespace MySQLSep16
 {
@@ -14,6 +18,9 @@ namespace MySQLSep16
     {
         CarData cardata = new CarData();
         CarModelData carmodeldata = new CarModelData();
+        ManufacturerDataAccess maun = new ManufacturerDataAccess();
+        OfferData offers = new OfferData();
+        CheckingAccountData bankAccounts = new CheckingAccountData();
         public int userID { get; set; }
 
 
@@ -66,14 +73,22 @@ namespace MySQLSep16
         }
         public void showDrive()
         {
-            
+           // userID = 1;
             List<CarModel> userCars = cardata.GetCarsByUserID(userID);
+            int maxID = -1;
             foreach (CarModel x in userCars)
             {
-                Console.WriteLine(x);
+                Console.WriteLine(x.CarID + ":" + maun.GetManufacturerByID(x.Brand).ManufacturerName+"Model:"+carmodeldata.GetCarByID(x.CarID).ModelName);
+                if (x.CarID > maxID)
+                {
+                    maxID = x.CarID;
+                }
+
             }
-            CarModel driving = cardata.GetCarByID(UIHelperMethods.checkForInt("Enter a valid ID of car you wanna drive"));
-            if (driving != null)
+
+
+            CarModel driving = cardata.GetCarByID(getInt("Enter a valid ID of car you wanna drive",1,maxID));
+            if (driving.sponsor != null)
             {
 //****add user money from sponserhip rate
             }
@@ -87,6 +102,7 @@ namespace MySQLSep16
                 case 1:
                     Console.WriteLine("You made it to starbucks");
                     driving.sponsor = 1;
+                    
                 break;
                 case 2:
                     Console.WriteLine("You made it to tacobell");
@@ -94,7 +110,7 @@ namespace MySQLSep16
                     break;
                 case 3:
                     Console.WriteLine("You made it to mcdonalds");
-                    driving.sponsor = 1;
+                    driving.sponsor = 3;
                     break;
                 case 4:
                     Console.WriteLine("You made it to Chicfila");
@@ -104,7 +120,7 @@ namespace MySQLSep16
                     Console.WriteLine("You made it to Houstons");
                     driving.sponsor = 5;
                     break;
-                case 6:
+                case 8:
                     Console.WriteLine("You hit a car");
  //****some punishment
                     break;
@@ -115,28 +131,124 @@ namespace MySQLSep16
                     Console.WriteLine("Congrats, you somehow broke the game, here's $1000");
 //******add money
                     break;
+                
 
             }
+            cardata.UpdateCar(driving);
+
             showMainScreen();
         }
         public void showMPMain()
         {
             //stuff
             int choice = 0;
-            MPTrigger(choice);
+            Console.WriteLine("\r\n███╗░░░███╗░█████╗░██████╗░██╗░░██╗███████╗████████╗██████╗░██╗░░░░░░█████╗░░█████╗░███████╗\r" +
+                "\n████╗░████║██╔══██╗██╔══██╗██║░██╔╝██╔════╝╚══██╔══╝██╔══██╗██║░░░░░██╔══██╗██╔══██╗██╔════╝\r" +
+                "\n██╔████╔██║███████║██████╔╝█████═╝░█████╗░░░░░██║░░░██████╔╝██║░░░░░███████║██║░░╚═╝█████╗░░\r" +
+                "\n██║╚██╔╝██║██╔══██║██╔══██╗██╔═██╗░██╔══╝░░░░░██║░░░██╔═══╝░██║░░░░░██╔══██║██║░░██╗██╔══╝░░\r" +
+                "\n██║░╚═╝░██║██║░░██║██║░░██║██║░╚██╗███████╗░░░██║░░░██║░░░░░███████╗██║░░██║╚█████╔╝███████╗\r" +
+                "\n╚═╝░░░░░╚═╝╚═╝░░╚═╝╚═╝░░╚═╝╚═╝░░╚═╝╚══════╝░░░╚═╝░░░╚═╝░░░░░╚══════╝╚═╝░░╚═╝░╚════╝░╚══════╝");
+
+
+            var table = new Table();
+
+            AnsiConsole.Live(table)
+                .Start(ctx =>
+                {
+                    table.Centered();
+
+                    // Add some Columns
+                    table.AddColumn(new TableColumn(" ").Centered());
+                    table.AddColumn(new TableColumn("MarketPlace").Centered());
+
+
+
+                    // Add some rows
+
+                    table.AddRow(new Markup("[blue]1[/]"), new Panel("Used Marketplace"));
+                    table.AddRow(new Markup("[blue]2[/]"), new Panel("Search"));
+                    table.AddRow(new Markup("[blue]3[/]"), new Panel("Buy"));
+                    table.AddRow(new Markup("[blue]4[/]"), new Panel("Exit"));
+
+                });
+            // Render the table to the console
+            //AnsiConsole.Write(table);
+
+            MPTrigger(getInt("Enter a valid choice", 1,4));
         }
         public void showGarageMain()
         {
             //stuff
             int choice = 0;
-            GarageTrigger(choice);
+
+            // string text = System.IO.File.ReadAllText(@"C:\Users\wised\Documents\AppDev\used.txt");
+
+            string text = "Garage";
+            Console.WriteLine(string.Format("{0," + (Console.WindowWidth / 2 + text.Length / 2) + "}", text));
+            /*
+            int left = Console.GetCursorPosition().Left;
+            int top = Console.GetCursorPosition().Top;
+            while (true)
+            {
+                Console.WriteLine("Left: " + left + " top: " + top);
+            }
+
+            */
+            //generating table
+            var table = new Table().Centered();
+
+            //editing table properties    
+            AnsiConsole.Live(table)
+                .Start(ctx =>
+                {
+                    table.AddColumn("Select #");
+                    ctx.Refresh();
+                    Thread.Sleep(200);
+
+                    table.AddColumn("       ");
+                    ctx.Refresh();
+                    Thread.Sleep(200);
+
+                    table.AddRow("1.", "[green]Mechanic[/]");
+                    table.AddRow("2.", "[red]Collection[/]");
+                    table.AddRow("3.", "[blue]Exit[/]");
+                    table.AddEmptyRow();
+                });
+           
+            
+        
+        GarageTrigger(getInt("Enter a valid choice",1,3));
 
         }
         public void showMechanic()
         {
             //stuff
             int choice = 0;
-            mechanicTriggers(choice);
+            string text = "Garage";
+            Console.WriteLine(string.Format("{0," + (Console.WindowWidth / 2 + text.Length / 2) + "}", text));
+            
+            var table = new Table().Centered();
+
+            //editing table properties    
+            AnsiConsole.Live(table)
+                .Start(ctx =>
+                {
+                    table.AddColumn("");
+                    ctx.Refresh();
+                    Thread.Sleep(200);
+
+                    table.AddColumn("Mechanic");
+                    ctx.Refresh();
+                    Thread.Sleep(200);
+
+                    table.AddRow("1.", "Repair all Damages");
+                    table.AddRow("2.", "Install new parts");
+
+                    table.AddEmptyRow();
+                });
+            Console.ReadLine();
+           
+        mechanicTriggers(getInt("Enter a valid choice",1,2));
         }
 
         public void showRepair()
@@ -261,13 +373,74 @@ namespace MySQLSep16
         {
             //stuff
             int choice = 0;
-            newMPTrigger(choice);
+            var table = new Table();
+
+            AnsiConsole.Live(table)
+                .Start(ctx =>
+                {
+                    Console.WriteLine("\r\n█░█░█ █░█ ▄▀█ ▀█▀   █▀▄ █▀█   █▄█ █▀█ █░█   █░█░█ ▄▀█ █▄░█ ▀█▀   ▀█▀ █▀█   █▄▄ █░█ █▄█ ▀█\r\n▀▄▀▄▀ █▀█ █▀█ ░█░   █▄▀ █▄█   ░█░ █▄█ █▄█   ▀▄▀▄▀ █▀█ █░▀█ ░█░   ░█░ █▄█   █▄█ █▄█ ░█░ ░▄\r\n\r\n");
+                    table.Centered();
+
+
+
+                    table.AddColumn(new TableColumn(" ").Centered());
+                    table.AddColumn(new TableColumn("Marketplace").Centered());
+
+
+                    table.AddRow(new Markup("[blue]1[/]"), new Panel("Car"));
+                    table.AddRow(new Markup("[blue]2[/]"), new Panel("Engine"));
+                    table.AddRow(new Markup("[blue]3[/]"), new Panel("Exit"));
+
+
+                });
+
+            newMPTrigger(getInt("Enter a valid choice",1,3));
         }
         public void showBuyUsedMarketPlace()
         {
             //stuff
             int choice = 0;
-            usedMPTrigger(choice);
+            var text = new Table().Centered();
+            AnsiConsole.Live(text)
+                .Start(ctx =>
+                {
+                    text.AddColumn("[red]Used Marketplace[/]");
+                    ctx.Refresh();
+                    Thread.Sleep(300);
+                    text.AddEmptyRow();
+                    text.AddEmptyRow();
+
+                });
+
+
+            Console.GetCursorPosition();
+
+            //generating table
+            var table = new Table().Centered();
+
+            //editing table properties    
+            AnsiConsole.Live(table)
+                .Start(ctx =>
+                {
+                    table.Border = TableBorder.AsciiDoubleHead;
+                    table.Width(40);
+
+                    table.AddColumn("");
+                    ctx.Refresh();
+                    Thread.Sleep(200);
+                    table.AddColumn("   SELECT #   ");
+                    ctx.Refresh();
+                    Thread.Sleep(200);
+
+                    table.AddRow(new Panel("1."), new Panel("[green]BUY[/]"));
+                    table.AddRow(new Panel("2."), new Panel("[red]SELL[/]"));
+                    table.AddRow(new Panel("3."), new Panel("[blue]EXIT[/]"));
+                    table.AddEmptyRow();
+
+
+
+                });
+            usedMPTrigger(getInt("Enter a valid choice",1,3));
             
         }
         public void showSearch()
@@ -312,11 +485,38 @@ namespace MySQLSep16
         public void sellUsed()
         {
             //stuff
+            List<CarModel> userCars = cardata.GetCarsByUserID(userID);
+            int maxID = -1;
+            foreach (CarModel x in userCars)
+            {
+                Console.WriteLine(x.CarID + ":" + maun.GetManufacturerByID(x.Brand).ManufacturerName + "Model:" + carmodeldata.GetCarByID(x.CarID).ModelName);
+                
+
+            }
+            CarModel selling = cardata.GetCarByID(getInt("Enter a valid ID of car you wanna sell", 1,maxID));
+            int offerprice=getInt("Enter price that you wanna sell your car for",0,1000000);
+            OfferModel offer = new OfferModel
+            {
+                SellerID = userID,
+                CarID=selling.CarID,
+                AskP=offerprice
+            };
+
+            offers.CreateOffer(offer);
+            Console.WriteLine("Offer Created");
+            Console.ReadLine();
+
+
             showMainScreen();
         }
         public void seeOffers()
         {
-            //stuff
+            List<OfferModel> currentOffers= offers.getAllOffers();
+            foreach (OfferModel x in currentOffers)
+            {
+                Console.WriteLine($"OfferID: {x.OfferID}, Asking Price: {x.AskP}, From:");
+            }
+
             showMainScreen();
         }
 
@@ -368,7 +568,23 @@ namespace MySQLSep16
 
         }
 
-       
+        public int getInt(string msg, int min, int max)
+        {
+            bool cont = false;
+            int output=-2;
+            while (!cont)
+            {
+                Console.WriteLine(msg);
+                cont = Int32.TryParse(Console.ReadLine(), out output);
+                if (output<min || output > max)
+                {
+                    cont = false;
+                }
+            }
+            return output;
+        }
+
+      
         
     }
 }
