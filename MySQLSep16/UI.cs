@@ -18,9 +18,11 @@ namespace MySQLSep16
     {
         CarData cardata = new CarData();
         CarModelData carmodeldata = new CarModelData();
-        ManufacturerDataAccess maun = new ManufacturerDataAccess();
+        ManufacturerDataAccess maunfacters = new ManufacturerDataAccess();
         OfferData offers = new OfferData();
         CheckingAccountData bankAccounts = new CheckingAccountData();
+        EngineData enginedata = new EngineData();
+        UserInfoData userinfo = new UserInfoData();
         public int userID { get; set; }
 
 
@@ -69,28 +71,45 @@ namespace MySQLSep16
         {
             //stuff
             int choice=0;
-            MainScreenTrigger(choice);
+            var table = new Table();
+
+            AnsiConsole.Live(table)
+                .Start(ctx =>
+                {
+                    Console.WriteLine("\r\n░██╗░░░░░░░██╗███████╗██╗░░░░░░█████╗░░█████╗░███╗░░░███╗███████╗  ████████╗░█████╗░  ████████╗██╗░░██╗███████╗\r\n░██║░░██╗░░██║██╔════╝██║░░░░░██╔══██╗██╔══██╗████╗░████║██╔════╝  ╚══██╔══╝██╔══██╗  ╚══██╔══╝██║░░██║██╔════╝\r\n░╚██╗████╗██╔╝█████╗░░██║░░░░░██║░░╚═╝██║░░██║██╔████╔██║█████╗░░  ░░░██║░░░██║░░██║  ░░░██║░░░███████║█████╗░░\r\n░░████╔═████║░██╔══╝░░██║░░░░░██║░░██╗██║░░██║██║╚██╔╝██║██╔══╝░░  ░░░██║░░░██║░░██║  ░░░██║░░░██╔══██║██╔══╝░░\r\n░░╚██╔╝░╚██╔╝░███████╗███████╗╚█████╔╝╚█████╔╝██║░╚═╝░██║███████╗  ░░░██║░░░╚█████╔╝  ░░░██║░░░██║░░██║███████╗\r\n░░░╚═╝░░░╚═╝░░╚══════╝╚══════╝░╚════╝░░╚════╝░╚═╝░░░░░╚═╝╚══════╝  ░░░╚═╝░░░░╚════╝░  ░░░╚═╝░░░╚═╝░░╚═╝╚══════╝\r\n\r\n░██████╗░░█████╗░███╗░░░███╗███████╗\r\n██╔════╝░██╔══██╗████╗░████║██╔════╝\r\n██║░░██╗░███████║██╔████╔██║█████╗░░\r\n██║░░╚██╗██╔══██║██║╚██╔╝██║██╔══╝░░\r\n╚██████╔╝██║░░██║██║░╚═╝░██║███████╗\r\n░╚═════╝░╚═╝░░╚═╝╚═╝░░░░░╚═╝╚══════╝");
+                    table.Centered();
+
+
+
+                    table.AddColumn(new TableColumn(" ").Centered());
+                    table.AddColumn(new TableColumn("CAR GAME").Centered());
+
+
+                    table.AddRow(new Markup("[blue]1[/]"), new Panel("Drive"));
+                    table.AddRow(new Markup("[blue]2[/]"), new Panel("Market Place"));
+                    table.AddRow(new Markup("[blue]3[/]"), new Panel("Garage"));
+                    table.AddRow(new Markup("[blue]4[/]"), new Panel("Bank"));
+                    table.AddRow(new Markup("[blue]5[/]"), new Panel("Soundtrack"));
+                    table.AddRow(new Markup("[blue]6[/]"), new Panel("Exit"));
+
+
+                });
+            MainScreenTrigger(getInt("Enter a valid choice",1,6));
         }
         public void showDrive()
         {
            // userID = 1;
             List<CarModel> userCars = cardata.GetCarsByUserID(userID);
-            int maxID = -1;
-            foreach (CarModel x in userCars)
-            {
-                Console.WriteLine(x.CarID + ":" + maun.GetManufacturerByID(x.Brand).ManufacturerName+"Model:"+carmodeldata.GetCarByID(x.CarID).ModelName);
-                if (x.CarID > maxID)
-                {
-                    maxID = x.CarID;
-                }
-
-            }
+            int maxID = printUserCars();
+           
 
 
             CarModel driving = cardata.GetCarByID(getInt("Enter a valid ID of car you wanna drive",1,maxID));
             if (driving.sponsor != null)
             {
-//****add user money from sponserhip rate
+                CheckingAccountModel account=bankAccounts.GetAccountByUserID(userID);
+                account.CurrentBalance += 100;//*****make specific once sponsershipdataaccess is available*****
+                bankAccounts.UpdateAccount(account);
             }
             GP.makeGame(driving, 500, 1000, 100);
             int outcome=GP.drive();
@@ -413,7 +432,7 @@ namespace MySQLSep16
                 });
 
 
-            Console.GetCursorPosition();
+           // Console.GetCursorPosition();
 
             //generating table
             var table = new Table().Centered();
@@ -440,7 +459,7 @@ namespace MySQLSep16
 
 
                 });
-            usedMPTrigger(getInt("Enter a valid choice",1,3));
+            usedMPTrigger(getInt("Enter a valid choice",1,2));
             
         }
         public void showSearch()
@@ -477,22 +496,11 @@ namespace MySQLSep16
                    
             }
         }
-        public void buyUsed()
-        {
-            //stuff
-            showMainScreen();
-        }
+       
         public void sellUsed()
         {
             //stuff
-            List<CarModel> userCars = cardata.GetCarsByUserID(userID);
-            int maxID = -1;
-            foreach (CarModel x in userCars)
-            {
-                Console.WriteLine(x.CarID + ":" + maun.GetManufacturerByID(x.Brand).ManufacturerName + "Model:" + carmodeldata.GetCarByID(x.CarID).ModelName);
-                
-
-            }
+            int maxID=printUserCars();
             CarModel selling = cardata.GetCarByID(getInt("Enter a valid ID of car you wanna sell", 1,maxID));
             int offerprice=getInt("Enter price that you wanna sell your car for",0,1000000);
             OfferModel offer = new OfferModel
@@ -509,14 +517,35 @@ namespace MySQLSep16
 
             showMainScreen();
         }
-        public void seeOffers()
+        public void buyUsed()
         {
             List<OfferModel> currentOffers= offers.getAllOffers();
             foreach (OfferModel x in currentOffers)
             {
-                Console.WriteLine($"OfferID: {x.OfferID}, Asking Price: {x.AskP}, From:");
+                Console.WriteLine($"OfferID: {x.OfferID}, Asking Price: {x.AskP}, From: {userinfo.GetUserByID(x.SellerID).UserName}");
+                printCar(cardata.GetCarByID(x.CarID));
             }
+            
+            int response=getInt("Enter Offer ID you want to accept, or -1 to go back",-1,currentOffers.Count());
+            if (response != -1)
+            {
+                OfferModel swap=offers.GetOfferByID(response);
+                CarModel swappingCar = cardata.GetCarByID(swap.CarID);
+                swappingCar.userID = swap.BuyerID;
+                swap.Accepted=true;
+                CheckingAccountModel buyer = bankAccounts.GetAccountByUserID(swap.BuyerID);
+                buyer.CurrentBalance-= swap.AskP;
+                CheckingAccountModel seller = bankAccounts.GetAccountByUserID(swap.SellerID);
+                seller.CurrentBalance += swap.AskP;
 
+                offers.DeleteOffer(swap);
+                cardata.UpdateCar(swappingCar);
+                bankAccounts.UpdateAccount(buyer);
+                bankAccounts.UpdateAccount(seller);
+                
+                
+
+            }
             showMainScreen();
         }
 
@@ -536,10 +565,7 @@ namespace MySQLSep16
                     Console.Clear();
                     sellUsed();
                     break;
-                case 3:
-                    Console.Clear();
-                    seeOffers();
-                    break;
+
 
             }
         }
@@ -582,6 +608,26 @@ namespace MySQLSep16
                 }
             }
             return output;
+        }
+
+        public int printUserCars()
+        {
+            List<CarModel> userCars = cardata.GetCarsByUserID(userID);
+            int maxID = -1;
+            foreach (CarModel x in userCars)
+            {
+                Console.WriteLine(x.CarID + ":" + maunfacters.GetManufacturerByID(x.Brand).ManufacturerName + "Model:" + carmodeldata.GetCarByID(x.CarID).ModelName);
+
+
+            }
+            return maxID;
+        }
+        public void printCar (CarModel x)
+        {
+            
+            Console.WriteLine(x.CarID + ":" + maunfacters.GetManufacturerByID(x.Brand).ManufacturerName + "Model:" + carmodeldata.GetCarByID(x.CarID).ModelName);
+
+            
         }
 
       

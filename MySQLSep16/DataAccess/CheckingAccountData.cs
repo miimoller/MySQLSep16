@@ -12,7 +12,7 @@ namespace MySQLSep16.DataAccess
         private readonly SqlDataAccess _db = new SqlDataAccess();
         public void CreateAccount(CheckingAccountModel c)
         {
-            string sql = "INSERT INTO `checkingaccount` (`AccountID`, `CurrentBalance`, `Loans`) VALUES (@AccountID, @CurrentBalance, @Loans)";
+            string sql = "INSERT INTO `checkingaccount` (`CurrentBalance`, `Loans`, 'UserID') VALUES (@CurrentBalance, @Loans, @UserID)";
             _db.SaveData(sql, c);
         }
         public List<CheckingAccountModel> getAllAccounts()
@@ -28,13 +28,19 @@ namespace MySQLSep16.DataAccess
         }
         public void UpdateAccount(CheckingAccountModel U)
         {
-            string sql = "UPDATE `checkingaccount` SET `AccountID`= @AccountID,`CurrentBalance`= @CurrentBalance,`Loans`=@Loans WHERE 1";
+            string sql = "UPDATE `checkingaccount` SET `CurrentBalance`= @CurrentBalance,`Loans`=@Loans WHERE 'checkingaccount'.`AccountID`= @AccountID";
             _db.SaveData(sql, U);
         }
         public CheckingAccountModel GetAccountByID(int id)
         {
             string sql = "SELECT * FROM `checkingaccount` WHERE AccountID = @AccountID";
             List<CheckingAccountModel> Users = _db.LoadData<CheckingAccountModel, dynamic>(sql, new { AccountID = id });
+            return Users.FirstOrDefault(u => u.AccountID == id);
+        }
+        public CheckingAccountModel GetAccountByUserID(int id)
+        {
+            string sql = "SELECT * FROM `checkingaccount` WHERE 'checkingaccount'.UserID = @UserID";
+            List<CheckingAccountModel> Users = _db.LoadData<CheckingAccountModel, dynamic>(sql, new { UserID = id });
             return Users.FirstOrDefault(u => u.AccountID == id);
         }
     }

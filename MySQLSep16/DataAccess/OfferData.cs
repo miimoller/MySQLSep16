@@ -18,6 +18,8 @@ namespace MySQLSep16.DataAccess
             return offers;
         }
 
+        
+
         public OfferModel GetOfferByID(int id)
         {
             string sql = "Select * FROM offers WHERE OfferID = @OfferID";
