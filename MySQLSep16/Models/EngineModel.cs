@@ -9,7 +9,8 @@ namespace MySQLSep16.Models
     internal class EngineModel
     {
         public int EngineID { get; set; }
-        public string Name { get; set; }
+        public string EngineType { get; set; }
         public int FuelScaling { get; set; }
+        public int Price { get; set; }
     }
 }

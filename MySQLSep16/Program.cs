@@ -60,7 +60,8 @@ foreach (CarModel x in cars)
 }
 */
 UI ui = new UI();
-ui.showMPMain();
+ui.userID = 1;
+ui.printUserCars();
 
 
 /*

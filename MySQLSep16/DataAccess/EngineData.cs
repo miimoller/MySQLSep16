@@ -27,14 +27,14 @@ namespace MySQLSep16.DataAccess
 
         public void CreateEngine(EngineModel e)
         {
-            string sql = "INSERT INTO `engines` (`Name`, `FuelScaling`) VALUES (@Name, @FuelScaling)";
+            string sql = "INSERT INTO `engines` (`Name`, `FuelScaling`, 'Price') VALUES (@Name, @FuelScaling, @Price)";
 
             _db.SaveData(sql, e);
         }
 
         public void UpdateEngine(EngineModel e)
         {
-            string sql = "UPDATE `engines` SET `Name` = @Name, `FuelScaling` = @FuelScaling WHERE `engines`.`EngineID` = @EngineID";
+            string sql = "UPDATE `engines` SET `Name` = @Name, `FuelScaling` = @FuelScaling, 'Price'=@Price WHERE `engines`.`EngineID` = @EngineID";
             _db.SaveData(sql, e);
         }
 

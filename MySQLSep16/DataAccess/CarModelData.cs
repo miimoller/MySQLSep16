@@ -27,13 +27,13 @@ namespace MySQLSep16.DataAccess
 
         public void CreateCar(CarModelsModel c)
         {
-            string sql = "INSERT INTO `carmodels` (`ModelName`, `ModelMPG`, `fuelCapacity`) VALUES (@ModelName, @ModelMPG, @fuelCapacity)";
+            string sql = "INSERT INTO `carmodels` (`ModelName`, `ModelMPG`, `fuelCapacity`, 'Price') VALUES (@ModelName, @ModelMPG, @fuelCapacity, @Price)";
             _db.SaveData(sql, c);
         }
 
         public void UpdateCar(CarModelsModel c)
         {
-            string sql = "UPDATE `carmodels` SET `ModelName` = @ModelName, 'ModelMPG' = @ModelMPG, 'fuelCapacity' = @fuelCapacity, 2023' WHERE `carmodels`.`ModelID` = ModelID";
+            string sql = "UPDATE `carmodels` SET `ModelName` = @ModelName, 'ModelMPG' = @ModelMPG, 'fuelCapacity' = @fuelCapacity, 2023' , 'Price'=@Price WHERE `carmodels`.`ModelID` = ModelID";
             _db.SaveData(sql, c);
         }
 

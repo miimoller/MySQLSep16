@@ -195,127 +195,18 @@ namespace MySQLSep16
 
             MPTrigger(getInt("Enter a valid choice", 1,4));
         }
-        public void showGarageMain()
-        {
-            //stuff
-            int choice = 0;
-
-            // string text = System.IO.File.ReadAllText(@"C:\Users\wised\Documents\AppDev\used.txt");
-
-            string text = "Garage";
-            Console.WriteLine(string.Format("{0," + (Console.WindowWidth / 2 + text.Length / 2) + "}", text));
-            /*
-            int left = Console.GetCursorPosition().Left;
-            int top = Console.GetCursorPosition().Top;
-            while (true)
-            {
-                Console.WriteLine("Left: " + left + " top: " + top);
-            }
-
-            */
-            //generating table
-            var table = new Table().Centered();
-
-            //editing table properties    
-            AnsiConsole.Live(table)
-                .Start(ctx =>
-                {
-                    table.AddColumn("Select #");
-                    ctx.Refresh();
-                    Thread.Sleep(200);
-
-                    table.AddColumn("       ");
-                    ctx.Refresh();
-                    Thread.Sleep(200);
-
-                    table.AddRow("1.", "[green]Mechanic[/]");
-                    table.AddRow("2.", "[red]Collection[/]");
-                    table.AddRow("3.", "[blue]Exit[/]");
-                    table.AddEmptyRow();
-                });
-           
-            
         
-        GarageTrigger(getInt("Enter a valid choice",1,3));
+      
 
-        }
-        public void showMechanic()
-        {
-            //stuff
-            int choice = 0;
-            string text = "Garage";
-            Console.WriteLine(string.Format("{0," + (Console.WindowWidth / 2 + text.Length / 2) + "}", text));
-            
-            var table = new Table().Centered();
-
-            //editing table properties    
-            AnsiConsole.Live(table)
-                .Start(ctx =>
-                {
-                    table.AddColumn("");
-                    ctx.Refresh();
-                    Thread.Sleep(200);
-
-                    table.AddColumn("Mechanic");
-                    ctx.Refresh();
-                    Thread.Sleep(200);
-
-                    table.AddRow("1.", "Repair all Damages");
-                    table.AddRow("2.", "Install new parts");
-
-                    table.AddEmptyRow();
-                });
-            Console.ReadLine();
-           
-        mechanicTriggers(getInt("Enter a valid choice",1,2));
-        }
-
-        public void showRepair()
-        {
-            //stuff
-            showMainScreen();
-        }
-
-        public void showInstall()
-        {
-            //stuff
-            showMainScreen();
-        }
-        public void mechanicTriggers(int choice)
-        {
-            switch (choice)
-            {
-                case 0:
-                    showGarageMain();
-                    break;
-                case 1:
-                    showRepair();
-                    break;
-                case 2:
-                    showInstall();
-                    break;
-            }
-        }
+       
+       
+      
         public void showCollection()
         {
             //stuff
             showMainScreen();
         }
-        public void GarageTrigger(int choice)
-        {
-            switch (choice)
-            {
-                case 0:
-                    showMainScreen();
-                    break;
-                case 1:
-                    showMechanic();
-                    break;
-                case 2:
-                    showCollection();
-                    break;
-            }
-        }
+       
         
         public void MainScreenTrigger(int choice)
         {
@@ -335,7 +226,7 @@ namespace MySQLSep16
                     break;
                 case 3:
                     Console.Clear();
-                    showGarageMain();
+                    showCollection();
                     break;
                 case 4:
                     Console.Clear();
@@ -470,11 +361,68 @@ namespace MySQLSep16
         public void showBuyNewCar()
         {
             //stuff
+            List<ManufacturerModel> manus = maunfacters.getAllManufacturer();
+            List<CarModelsModel> allcars = carmodeldata.getAllCarModels();
+
+            foreach (ManufacturerModel x in manus)
+            {
+                Console.WriteLine(x.ManufacturerID+"Name: "+x.ManufacturerName);
+            }
+            int choice = getInt("Enter manufacter ID or -1 to go back", -1, 3);
+
+            if (choice != -1)
+            {
+                if (choice == 1)
+                {
+                    Console.WriteLine(allcars[0].ModelID + "Model Name: "+allcars[0].ModelName);
+                    Console.WriteLine(allcars[1].ModelID + "Model Name: " + allcars[1].ModelName);
+                    Console.WriteLine(allcars[2].ModelID + "Model Name: " + allcars[2].ModelName);
+                }
+                if (choice == 2)
+                {
+                    Console.WriteLine(allcars[3].ModelID + "Model Name: " + allcars[3].ModelName);
+                    Console.WriteLine(allcars[4].ModelID + "Model Name: " + allcars[4].ModelName);
+                    Console.WriteLine(allcars[5].ModelID + "Model Name: " + allcars[5].ModelName);
+                }
+                if (choice == 3)
+                {
+                    Console.WriteLine(allcars[6].ModelID + "Model Name: " + allcars[6].ModelName);
+                    Console.WriteLine(allcars[7].ModelID + "Model Name: " + allcars[7].ModelName);
+                    Console.WriteLine(allcars[8].ModelID + "Model Name: " + allcars[8].ModelName);
+                }
+            }
+
             showMainScreen();
         }
         public void showBuyEngine()
         {
-            //stuff
+            List<EngineModel> currentEngines = enginedata.getAllEngines();
+            int max = -2;
+            foreach (EngineModel x in currentEngines)
+            {
+                Console.WriteLine(x.EngineType+"Fuel Scalling: "+x.FuelScaling);
+                if (x.EngineID > max)
+                {
+                    max = x.EngineID;
+                }
+            }
+            
+            int choice = getInt("Choose engine you wanna buy, or -1 to go back", -1, max);
+            if (choice != -1)
+            {
+                EngineModel currentEngine = enginedata.GetEngineByID(choice);
+                int maxCar=printUserCars();
+                int choiceCar = getInt("Enter car you wanna inert the car into", 0, maxCar);
+
+                CarModel engineCar=cardata.GetCarByID(choiceCar);
+                engineCar.fgn_EngineID = currentEngine.EngineID;
+                cardata.UpdateCar(engineCar);
+
+                CheckingAccountModel useraccount = bankAccounts.GetAccountByUserID(userID);
+                useraccount.CurrentBalance -= currentEngine.Price;
+                bankAccounts.UpdateAccount(useraccount);
+
+            }
             showMainScreen();
         }
 
@@ -612,15 +560,45 @@ namespace MySQLSep16
 
         public int printUserCars()
         {
-            List<CarModel> userCars = cardata.GetCarsByUserID(userID);
+
             int maxID = -1;
-            foreach (CarModel x in userCars)
-            {
+           
+            var table = new Table().Centered();
 
-                Console.WriteLine(x.CarID + ":" + maunfacters.GetManufacturerByID(x.Brand).ManufacturerName + "Model:" + carmodeldata.GetCarByID(x.CarID).ModelName);
+            //editing table properties    
+            AnsiConsole.Live(table)
+                .Start(ctx =>
+                {
+                    table.Border = TableBorder.AsciiDoubleHead;
+                    table.Width(40);
+
+                    
+                    
+                   
+                    table.AddColumn("   SELECT Car ID #   ");
+                    ctx.Refresh();
+                    Thread.Sleep(200);
+
+                    List<CarModel> userCars = cardata.GetCarsByUserID(userID);
+                    
+                    foreach (CarModel x in userCars)
+                    {
+
+                        Console.WriteLine();
+                        table.AddRow(new Panel($"[green]{x.CarID + ":" + maunfacters.GetManufacturerByID(x.Brand).ManufacturerName + " Model:" + carmodeldata.GetCarByID(x.CarID).ModelName}[/]"));
 
 
-            }
+
+                    }
+
+
+                    table.AddEmptyRow();
+
+
+
+                });
+            
+            
             return maxID;
         }
         public void printCar (CarModel x)
