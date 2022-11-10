@@ -616,6 +616,7 @@ namespace MySQLSep16
             int maxID = -1;
             foreach (CarModel x in userCars)
             {
+
                 Console.WriteLine(x.CarID + ":" + maunfacters.GetManufacturerByID(x.Brand).ManufacturerName + "Model:" + carmodeldata.GetCarByID(x.CarID).ModelName);
 
 
