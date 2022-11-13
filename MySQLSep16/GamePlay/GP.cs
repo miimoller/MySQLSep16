@@ -99,8 +99,8 @@ namespace MySQLSep16.GamePlay
         {
             CarModelData carmodeldata = new CarModelData();
             ConsoleKey input = ConsoleKey.W;
-            //******add data access to get fuel scalling from 2ndary key from carModelsModel**
-            gasAmount = carmodeldata.GetCarByID(drivingCar.fgn_ModelID).fuelCapacity*50;
+          
+            gasAmount = carmodeldata.GetCarByID(drivingCar.fgn_ModelID).fuelCapacity* carmodeldata.GetCarByID(drivingCar.fgn_ModelID).ModelMPG*20;
 
 
 

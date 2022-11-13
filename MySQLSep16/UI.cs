@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using Table = Spectre.Console.Table;
 
 namespace MySQLSep16
@@ -23,9 +24,10 @@ namespace MySQLSep16
         CheckingAccountData bankAccounts = new CheckingAccountData();
         EngineData enginedata = new EngineData();
         UserInfoData userinfo = new UserInfoData();
+        SearchData searches = new SearchData();
         public int userID { get; set; }
 
-
+        
         public void showLogInMain()
         {
             //stuff
@@ -94,17 +96,17 @@ namespace MySQLSep16
 
 
                 });
-            MainScreenTrigger(getInt("Enter a valid choice",1,6));
+            MainScreenTrigger(getInt("Enter a valid choice",new List<int> { 1,2,3,4,5,6}));
         }
         public void showDrive()
         {
            // userID = 1;
             List<CarModel> userCars = cardata.GetCarsByUserID(userID);
-            int maxID = printUserCars();
+            List<int>ids = printUserCars();
            
 
 
-            CarModel driving = cardata.GetCarByID(getInt("Enter a valid ID of car you wanna drive",1,maxID));
+            CarModel driving = cardata.GetCarByID(getInt("Enter a valid ID of car you wanna drive",ids));
             if (driving.sponsor != null)
             {
                 CheckingAccountModel account=bankAccounts.GetAccountByUserID(userID);
@@ -193,21 +195,18 @@ namespace MySQLSep16
             // Render the table to the console
             //AnsiConsole.Write(table);
 
-            MPTrigger(getInt("Enter a valid choice", 1,4));
+            MPTrigger(getInt("Enter a valid choice",new List<int> { 1,2,3,4}));
         }
-        
-      
-
-       
-       
-      
         public void showCollection()
         {
-            //stuff
+            List<int> ids=printUserCars();
+            int choice = getInt("Enter the Id of the car you want more info for", ids);
+            CarModel showCar = cardata.GetCarByID(choice);
+            
+            printCar(showCar);
+
             showMainScreen();
         }
-       
-        
         public void MainScreenTrigger(int choice)
         {
 
@@ -278,7 +277,6 @@ namespace MySQLSep16
                     break;
             }
         }
-
         public void showBuyFromMarketPlace()
         {
             //stuff
@@ -304,7 +302,8 @@ namespace MySQLSep16
 
                 });
 
-            newMPTrigger(getInt("Enter a valid choice",1,3));
+
+            newMPTrigger(getInt("Enter a valid choice",new List<int> { 1,2,3}));
         }
         public void showBuyUsedMarketPlace()
         {
@@ -342,6 +341,7 @@ namespace MySQLSep16
                     ctx.Refresh();
                     Thread.Sleep(200);
 
+                    
                     table.AddRow(new Panel("1."), new Panel("[green]BUY[/]"));
                     table.AddRow(new Panel("2."), new Panel("[red]SELL[/]"));
                     table.AddRow(new Panel("3."), new Panel("[blue]EXIT[/]"));
@@ -350,12 +350,66 @@ namespace MySQLSep16
 
 
                 });
-            usedMPTrigger(getInt("Enter a valid choice",1,2));
+            usedMPTrigger(getInt("Enter a valid choice",new List<int> { 1,2,3}));
             
         }
         public void showSearch()
         {
-            //stuff
+            ManufacturerModel choosenManu;
+            
+
+            List<ManufacturerModel> manus = maunfacters.getAllManufacturer();
+            List<CarModelsModel> allcars = carmodeldata.getAllCarModels();
+            List<int> manuIds = new List<int>();
+            foreach (ManufacturerModel x in manus)
+            {
+                Console.WriteLine(x.ManufacturerID + "Name: " + x.ManufacturerName);
+                manuIds.Add(x.ManufacturerID);
+            }
+            manuIds.Add(-1);
+            int choice = getInt("Enter manufacter ID or -1 to go back", manuIds);
+            choosenManu= maunfacters.GetManufacturerByID(choice);
+            List<int>modelIds=new List<int>();
+            if (choice != -1)
+            {
+                if (choice == 1)
+                {
+                    Console.WriteLine(allcars[0].ModelID + "Model Name: " + allcars[0].ModelName);
+                    Console.WriteLine(allcars[1].ModelID + "Model Name: " + allcars[1].ModelName);
+                    Console.WriteLine(allcars[2].ModelID + "Model Name: " + allcars[2].ModelName);
+                    modelIds.Add(allcars[0].ModelID);
+                    modelIds.Add(allcars[1].ModelID);
+                    modelIds.Add(allcars[2].ModelID);
+                }
+                if (choice == 2)
+                {
+                    Console.WriteLine(allcars[3].ModelID + "Model Name: " + allcars[3].ModelName);
+                    Console.WriteLine(allcars[4].ModelID + "Model Name: " + allcars[4].ModelName);
+                    Console.WriteLine(allcars[5].ModelID + "Model Name: " + allcars[5].ModelName);
+                    modelIds.Add(allcars[3].ModelID);
+                    modelIds.Add(allcars[4].ModelID);
+                    modelIds.Add(allcars[5].ModelID);
+                }
+                if (choice == 3)
+                {
+                    Console.WriteLine(allcars[6].ModelID + "Model Name: " + allcars[6].ModelName);
+                    Console.WriteLine(allcars[7].ModelID + "Model Name: " + allcars[7].ModelName);
+                    Console.WriteLine(allcars[8].ModelID + "Model Name: " + allcars[8].ModelName);
+                    modelIds.Add(allcars[6].ModelID);
+                    modelIds.Add(allcars[7].ModelID);
+                    modelIds.Add(allcars[8].ModelID);
+                }
+                int choice2 = getInt("Enter the Model ID You want to see", modelIds);
+                CarModelsModel searchedCar = carmodeldata.GetCarByID(choice2);
+                Console.WriteLine($"The {choosenManu} {searchedCar.ModelName} has a MPG of {searchedCar.ModelMPG} and fuel capacity of {searchedCar.fuelCapacity}");
+
+                SearchModel s = new SearchModel
+                {
+                    CarID = searchedCar.ModelID,
+                    UserID = userID
+                };
+                searches.CreateSearch(s);
+            }
             showMainScreen();
         }
         public void showBuyNewCar()
@@ -363,12 +417,14 @@ namespace MySQLSep16
             //stuff
             List<ManufacturerModel> manus = maunfacters.getAllManufacturer();
             List<CarModelsModel> allcars = carmodeldata.getAllCarModels();
-
+            List<int> manuIds = new List<int>();
             foreach (ManufacturerModel x in manus)
             {
                 Console.WriteLine(x.ManufacturerID+"Name: "+x.ManufacturerName);
+                manuIds.Add(x.ManufacturerID);
             }
-            int choice = getInt("Enter manufacter ID or -1 to go back", -1, 3);
+            manuIds.Add(-1);
+            int choice = getInt("Enter manufacter ID or -1 to go back", manuIds);
 
             if (choice != -1)
             {
@@ -397,22 +453,19 @@ namespace MySQLSep16
         public void showBuyEngine()
         {
             List<EngineModel> currentEngines = enginedata.getAllEngines();
-            int max = -2;
+            List<int> engineIds = new List<int>();
             foreach (EngineModel x in currentEngines)
             {
                 Console.WriteLine(x.EngineType+"Fuel Scalling: "+x.FuelScaling);
-                if (x.EngineID > max)
-                {
-                    max = x.EngineID;
-                }
+                engineIds.Add(x.EngineID);
             }
-            
-            int choice = getInt("Choose engine you wanna buy, or -1 to go back", -1, max);
+            engineIds.Add(-1);
+            int choice = getInt("Choose engine you wanna buy, or -1 to go back",engineIds);
             if (choice != -1)
             {
                 EngineModel currentEngine = enginedata.GetEngineByID(choice);
-                int maxCar=printUserCars();
-                int choiceCar = getInt("Enter car you wanna inert the car into", 0, maxCar);
+                List<int> carIDs=printUserCars();
+                int choiceCar = getInt("Enter car you wanna inert the car into",carIDs);
 
                 CarModel engineCar=cardata.GetCarByID(choiceCar);
                 engineCar.fgn_EngineID = currentEngine.EngineID;
@@ -425,7 +478,6 @@ namespace MySQLSep16
             }
             showMainScreen();
         }
-
         public void newMPTrigger(int choice)
         {
             switch (choice) {
@@ -444,13 +496,12 @@ namespace MySQLSep16
                    
             }
         }
-       
         public void sellUsed()
         {
             //stuff
-            int maxID=printUserCars();
-            CarModel selling = cardata.GetCarByID(getInt("Enter a valid ID of car you wanna sell", 1,maxID));
-            int offerprice=getInt("Enter price that you wanna sell your car for",0,1000000);
+            List<int> ids=printUserCars();
+            CarModel selling = cardata.GetCarByID(getInt("Enter a valid ID of car you wanna sell",ids));
+            int offerprice=getInt("Enter price that you wanna sell your car for");
             OfferModel offer = new OfferModel
             {
                 SellerID = userID,
@@ -468,13 +519,15 @@ namespace MySQLSep16
         public void buyUsed()
         {
             List<OfferModel> currentOffers= offers.getAllOffers();
+            List<int> offerIDs = new List<int>();
             foreach (OfferModel x in currentOffers)
             {
                 Console.WriteLine($"OfferID: {x.OfferID}, Asking Price: {x.AskP}, From: {userinfo.GetUserByID(x.SellerID).UserName}");
                 printCar(cardata.GetCarByID(x.CarID));
+                offerIDs.Add(x.OfferID);
             }
-            
-            int response=getInt("Enter Offer ID you want to accept, or -1 to go back",-1,currentOffers.Count());
+            offerIDs.Add(-1);
+            int response=getInt("Enter Offer ID you want to accept, or -1 to go back",offerIDs);
             if (response != -1)
             {
                 OfferModel swap=offers.GetOfferByID(response);
@@ -496,7 +549,6 @@ namespace MySQLSep16
             }
             showMainScreen();
         }
-
         public void usedMPTrigger(int choice)
         {
             switch (choice)
@@ -542,7 +594,22 @@ namespace MySQLSep16
 
         }
 
-        public int getInt(string msg, int min, int max)
+
+        public int getInt(string msg)
+        {
+            bool cont = false;
+            int output = -2;
+            while (!cont)
+            {
+                Console.WriteLine(msg);
+                cont = Int32.TryParse(Console.ReadLine(), out output);
+                
+                    cont = false;
+               
+            }
+            return output;
+        }
+        public int getInt(string msg, List<int>potentials)
         {
             bool cont = false;
             int output=-2;
@@ -550,18 +617,17 @@ namespace MySQLSep16
             {
                 Console.WriteLine(msg);
                 cont = Int32.TryParse(Console.ReadLine(), out output);
-                if (output<min || output > max)
+                if (potentials.Contains(output))
                 {
                     cont = false;
                 }
             }
             return output;
         }
-
-        public int printUserCars()
+        public List<int> printUserCars()
         {
 
-            int maxID = -1;
+            List<int> ids=new List<int>();
            
             var table = new Table().Centered();
 
@@ -586,7 +652,7 @@ namespace MySQLSep16
 
                         Console.WriteLine();
                         table.AddRow(new Panel($"[green]{x.CarID + ":" + maunfacters.GetManufacturerByID(x.Brand).ManufacturerName + " Model:" + carmodeldata.GetCarByID(x.CarID).ModelName}[/]"));
-
+                        ids.Add(x.CarID);
 
 
                     }
@@ -599,17 +665,28 @@ namespace MySQLSep16
                 });
             
             
-            return maxID;
+            return ids;
         }
         public void printCar (CarModel x)
         {
             
             Console.WriteLine(x.CarID + ":" + maunfacters.GetManufacturerByID(x.Brand).ManufacturerName + "Model:" + carmodeldata.GetCarByID(x.CarID).ModelName);
-
+            Console.WriteLine("Engine: "+enginedata.GetEngineByID(cardata.GetCarByID(x.CarID).fgn_EngineID)+"Sponser: "/*  ADD sponser part here when sponsership data access is there*/);
             
         }
+        public void updatePrices()
+        {
+            List<CarModelsModel> allModels = carmodeldata.getAllCarModels();
+            
+            foreach (CarModelsModel x in allModels)
+            {
+                List<SearchModel> searchForCar = searches.GetSearchesByCarID(x.ModelID);
+                if (searchForCar.Count > 20)
+                {
 
-      
+                }
+            }
+        }
         
     }
 }

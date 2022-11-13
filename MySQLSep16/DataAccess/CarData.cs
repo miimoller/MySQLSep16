@@ -34,7 +34,7 @@ namespace MySQLSep16.DataAccess
 
         public void CreateCar(CarModel c)//fix this too
         {
-            string sql = "INSERT INTO `car` (`ModelName`, `ModelMPG`, `fuelCapacity`) VALUES (@ModelName, @ModelMPG, @fuelCapacity)";
+            string sql = "INSERT INTO `car` (`Brand`, `fgn_ModelID`, `fgn_EngineID`, 'currentFuel', 'sponsor', `userID`, `Finance`) VALUES (@Brand, @fgn_ModelID, @fgn_EngineID, @currentFuel, @sponsor, @userID, @Finance )";
             _db.SaveData(sql, c);
         }
 
@@ -46,7 +46,7 @@ namespace MySQLSep16.DataAccess
 
         public void DeleteCar(CarModel c)
         {
-            string sql = "DELETE FROM `car` WHERE 'car'.'ModelID' = @ModelID";
+            string sql = "DELETE FROM `car` WHERE 'car'.'CarID' = @CarID";
             _db.SaveData(sql, c);
         }
     }
