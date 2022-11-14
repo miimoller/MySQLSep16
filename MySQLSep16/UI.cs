@@ -22,6 +22,7 @@ namespace MySQLSep16
         ManufacturerDataAccess maunfacters = new ManufacturerDataAccess();
         OfferData offers = new OfferData();
         CheckingAccountData bankAccounts = new CheckingAccountData();
+        LoanDataAccess loans = new LoanDataAccess();
         EngineData enginedata = new EngineData();
         UserInfoData userinfo = new UserInfoData();
         SearchData searches = new SearchData();
@@ -96,7 +97,7 @@ namespace MySQLSep16
 
 
                 });
-            MainScreenTrigger(getInt("Enter a valid choice",new List<int> { 1,2,3,4,5,6}));
+            MainScreenTrigger(getInt("Enter a valid choice",new List<int> { 0,1,2,3,4,}));
         }
         public void showDrive()
         {
@@ -231,18 +232,11 @@ namespace MySQLSep16
                     Console.Clear();
                     showBankMain();
                     break;
-                case 5:
-                    Console.Clear();
-                    showSoundTrack();
-                    break;
+               
             }
 
         }
-        public void showSoundTrack()
-        {
-            //stuff
-            showMainScreen();
-        }
+       
 
         public void showBankMain()
         {
@@ -253,12 +247,18 @@ namespace MySQLSep16
 
         public void showAccount()
         {
-            //stuff
+            CheckingAccountModel x=bankAccounts.GetAccountByUserID(userID);
+            Console.WriteLine("AccountID: "+x.AccountID+"Current Balance: "+x.CurrentBalance+"Current Loans: "+x.Loans);
             showMainScreen();
         }
         public void showLoans()
         {
-            //stuff
+            List<LoanModel> userLoans=loans.GetLoansByUserID(userID);
+            foreach (LoanModel x in userLoans)
+            {
+                Console.WriteLine("Origional Amount: "+x.original_amount+" Term: "+x.Term+" Rate: "+x.rate);
+            }
+            Console.ReadLine();
             showMainScreen();
         }
 
@@ -275,7 +275,15 @@ namespace MySQLSep16
                 case 2:
                     showLoans();
                     break;
+                case 3:
+                    showTransactions();
+                    break;
             }
+        }
+
+        public void showTransactions()
+        {
+
         }
         public void showBuyFromMarketPlace()
         {
@@ -433,18 +441,72 @@ namespace MySQLSep16
                     Console.WriteLine(allcars[0].ModelID + "Model Name: "+allcars[0].ModelName);
                     Console.WriteLine(allcars[1].ModelID + "Model Name: " + allcars[1].ModelName);
                     Console.WriteLine(allcars[2].ModelID + "Model Name: " + allcars[2].ModelName);
+                    int choice2 = getInt("Enter ModelID You want to buy", new List<int> { allcars[0].ModelID, allcars[1].ModelID, allcars[2].ModelID });
+                    CarModelsModel x=carmodeldata.GetCarByID(choice2);
+                    if (bankAccounts.GetAccountByUserID(userID).CurrentBalance < x.Price)
+                    {
+                        LoanModel loan = new LoanModel
+                        {
+                            original_amount = x.Price,
+                            rate =0.12,
+                            Term=12,
+                            MonthlyPayment =21213234232323
+                        };
+                        loans.CreateLoan(loan);
+                    }
+                    else
+                    {
+                        bankAccounts.GetAccountByUserID(userID).CurrentBalance -= x.Price;
+                    }
+                    
                 }
                 if (choice == 2)
                 {
                     Console.WriteLine(allcars[3].ModelID + "Model Name: " + allcars[3].ModelName);
                     Console.WriteLine(allcars[4].ModelID + "Model Name: " + allcars[4].ModelName);
                     Console.WriteLine(allcars[5].ModelID + "Model Name: " + allcars[5].ModelName);
+
+                    int choice2 = getInt("Enter ModelID You want to buy", new List<int> { allcars[3].ModelID, allcars[4].ModelID, allcars[5].ModelID });
+                    CarModelsModel x = carmodeldata.GetCarByID(choice2);
+                    if (bankAccounts.GetAccountByUserID(userID).CurrentBalance < x.Price)
+                    {
+                        LoanModel loan = new LoanModel
+                        {
+                            original_amount = x.Price,
+                            rate = 0.12,
+                            Term = 12,
+                            MonthlyPayment = 21213234232323
+                        };
+                        loans.CreateLoan(loan);
+                    }
+                    else
+                    {
+                        bankAccounts.GetAccountByUserID(userID).CurrentBalance -= x.Price;
+                    }
                 }
                 if (choice == 3)
                 {
                     Console.WriteLine(allcars[6].ModelID + "Model Name: " + allcars[6].ModelName);
                     Console.WriteLine(allcars[7].ModelID + "Model Name: " + allcars[7].ModelName);
                     Console.WriteLine(allcars[8].ModelID + "Model Name: " + allcars[8].ModelName);
+
+                    int choice2 = getInt("Enter ModelID You want to buy", new List<int> { allcars[6].ModelID, allcars[7].ModelID, allcars[8].ModelID });
+                    CarModelsModel x = carmodeldata.GetCarByID(choice2);
+                    if (bankAccounts.GetAccountByUserID(userID).CurrentBalance < x.Price)
+                    {
+                        LoanModel loan = new LoanModel
+                        {
+                            original_amount = x.Price,
+                            rate = 0.12,
+                            Term = 12,
+                            MonthlyPayment = 21213234232323
+                        };
+                        loans.CreateLoan(loan);
+                    }
+                    else
+                    {
+                        bankAccounts.GetAccountByUserID(userID).CurrentBalance -= x.Price;
+                    }
                 }
             }
 
@@ -683,7 +745,24 @@ namespace MySQLSep16
                 List<SearchModel> searchForCar = searches.GetSearchesByCarID(x.ModelID);
                 if (searchForCar.Count > 20)
                 {
+                    CarModelsModel changingCar = carmodeldata.GetCarByID(searchForCar[0].CarID);
+                    changingCar.Price= (int)((double)changingCar.Price*1.1);
 
+                    carmodeldata.UpdateCar(changingCar);
+                }
+                if (searchForCar.Count > 40)
+                {
+                    CarModelsModel changingCar = carmodeldata.GetCarByID(searchForCar[0].CarID);
+                    changingCar.Price = (int)((double)changingCar.Price * 1.2);
+
+                    carmodeldata.UpdateCar(changingCar);
+                }
+                if (searchForCar.Count > 60)
+                {
+                    CarModelsModel changingCar = carmodeldata.GetCarByID(searchForCar[0].CarID);
+                    changingCar.Price = (int)((double)changingCar.Price * 1.3);
+
+                    carmodeldata.UpdateCar(changingCar);
                 }
             }
         }
