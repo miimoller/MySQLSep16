@@ -26,6 +26,7 @@ namespace MySQLSep16
         EngineData enginedata = new EngineData();
         UserInfoData userinfo = new UserInfoData();
         SearchData searches = new SearchData();
+        TransactionDataAccess transactions = new TransactionDataAccess();
         public int userID { get; set; }
 
         
@@ -108,11 +109,21 @@ namespace MySQLSep16
 
 
             CarModel driving = cardata.GetCarByID(getInt("Enter a valid ID of car you wanna drive",ids));
-            if (driving.sponsor != null)
+            if (driving.sponsor != 6)
             {
                 CheckingAccountModel account=bankAccounts.GetAccountByUserID(userID);
                 account.CurrentBalance += 100;//*****make specific once sponsershipdataaccess is available*****
                 bankAccounts.UpdateAccount(account);
+                TransactionModel sponser = new TransactionModel
+                {
+                    Amount=100,//make specific again
+                    Date=DateTime.Now,
+                    Source="Sponsership for CarID: "+driving.CarID,
+                    Type=false,
+                    UserID=userID
+                };
+                transactions.CreateTransaction(sponser);
+
             }
             GP.makeGame(driving, 500, 1000, 100);
             int outcome=GP.drive();
@@ -149,10 +160,7 @@ namespace MySQLSep16
                 case 7:
                     Console.WriteLine("You hit a person");
                     break;
-                default:
-                    Console.WriteLine("Congrats, you somehow broke the game, here's $1000");
-//******add money
-                    break;
+                
                 
 
             }
@@ -240,8 +248,26 @@ namespace MySQLSep16
 
         public void showBankMain()
         {
-            //stuff
+            
             int choice = 0;
+            var table = new Table();
+
+            AnsiConsole.Live(table)
+                .Start(ctx =>
+                {
+                    Console.WriteLine("                      \r\n██████╗░░█████╗░███╗░░██╗██╗░░██╗\r\n██╔══██╗██╔══██╗████╗░██║██║░██╔╝\r\n██████╦╝███████║██╔██╗██║█████═╝░\r\n██╔══██╗██╔══██║██║╚████║██╔═██╗░\r\n██████╦╝██║░░██║██║░╚███║██║░╚██╗\r\n╚═════╝░╚═╝░░╚═╝╚═╝░░╚══╝╚═╝░░╚═╝");
+                    table.Centered();
+
+                    table.AddColumn(new TableColumn(" ").Centered());
+                    table.AddColumn(new TableColumn("Bank").Centered());
+
+
+                    table.AddRow(new Markup("[blue]1[/]"), new Panel("Account"));
+                    table.AddRow(new Markup("[blue]2[/]"), new Panel("Loan"));
+                    table.AddRow(new Markup("[blue]3[/]"), new Panel("Show transaction"));
+
+                });
+            choice = getInt("Enter choice for bank options", new List<int> { 1, 2, 3 });
             bankTriggers(choice);
         }
 
@@ -283,7 +309,20 @@ namespace MySQLSep16
 
         public void showTransactions()
         {
-
+            List<TransactionModel>userTxs=transactions.GetTransactionByUserID(userID);
+            foreach (TransactionModel x in userTxs)
+            {
+                string type;
+                if (x.Type)
+                {
+                    type = "withdrawal";
+                }
+                else
+                {
+                    type = "deposit";
+                }
+                Console.WriteLine("ID: "+x.transaction_ID+"Date: "+x.Date+type+" on "+x.Date+" for "+x.Amount+"\nSource: "+x.Source);
+            }
         }
         public void showBuyFromMarketPlace()
         {
@@ -450,13 +489,23 @@ namespace MySQLSep16
                             original_amount = x.Price,
                             rate =0.12,
                             Term=12,
-                            MonthlyPayment =21213234232323
+                            MonthlyPayment =0
                         };
                         loans.CreateLoan(loan);
+                        Console.WriteLine("You took out a loan for "+loan.original_amount);
                     }
                     else
                     {
                         bankAccounts.GetAccountByUserID(userID).CurrentBalance -= x.Price;
+                        TransactionModel tx = new TransactionModel
+                        {
+                            Amount = x.Price,
+                            Type = true,
+                            Date = DateTime.Now,
+                            Source = "Paying for Car with ModelID " + x.ModelID,
+                            UserID = userID
+                        };
+                        transactions.CreateTransaction(tx);
                     }
                     
                 }
@@ -475,13 +524,23 @@ namespace MySQLSep16
                             original_amount = x.Price,
                             rate = 0.12,
                             Term = 12,
-                            MonthlyPayment = 21213234232323
+                            MonthlyPayment = 0
                         };
                         loans.CreateLoan(loan);
+                        Console.WriteLine("You took out a loan for " + loan.original_amount);
                     }
                     else
                     {
                         bankAccounts.GetAccountByUserID(userID).CurrentBalance -= x.Price;
+                        TransactionModel tx = new TransactionModel
+                        {
+                            Amount = x.Price,
+                            Type = true,
+                            Date = DateTime.Now,
+                            Source = "Paying for Car with ModelID " + x.ModelID,
+                            UserID = userID
+                        };
+                        transactions.CreateTransaction(tx);
                     }
                 }
                 if (choice == 3)
@@ -499,13 +558,23 @@ namespace MySQLSep16
                             original_amount = x.Price,
                             rate = 0.12,
                             Term = 12,
-                            MonthlyPayment = 21213234232323
+                            MonthlyPayment = 0
                         };
                         loans.CreateLoan(loan);
+                        Console.WriteLine("You took out a loan for " + loan.original_amount);
                     }
                     else
                     {
                         bankAccounts.GetAccountByUserID(userID).CurrentBalance -= x.Price;
+                        TransactionModel tx = new TransactionModel
+                        {
+                            Amount = x.Price,
+                            Type = true,
+                            Date = DateTime.Now,
+                            Source = "Paying for Car with ModelID " + x.ModelID,
+                            UserID = userID
+                        };
+                        transactions.CreateTransaction(tx);
                     }
                 }
             }
@@ -532,9 +601,36 @@ namespace MySQLSep16
                 CarModel engineCar=cardata.GetCarByID(choiceCar);
                 engineCar.fgn_EngineID = currentEngine.EngineID;
                 cardata.UpdateCar(engineCar);
-
+                
                 CheckingAccountModel useraccount = bankAccounts.GetAccountByUserID(userID);
-                useraccount.CurrentBalance -= currentEngine.Price;
+                if (useraccount.CurrentBalance < currentEngine.Price)
+                {
+                    LoanModel engineLoan = new LoanModel
+                    {
+                        original_amount = currentEngine.Price,
+                        rate = 0.12,
+                        Term = 12,
+                        MonthlyPayment = 0
+                    };
+                    loans.CreateLoan(engineLoan);
+                    Console.WriteLine("You took out a loan of "+currentEngine.Price);
+                }
+                else
+                {
+                    useraccount.CurrentBalance -= currentEngine.Price;
+
+                    TransactionModel tx = new TransactionModel
+                    {
+                        Amount = currentEngine.Price,
+                        Type = true,
+                        Date = DateTime.Now,
+                        Source = "Paying for Engine with ID " + currentEngine.EngineID,
+                        UserID=userID
+                    };
+                    transactions.CreateTransaction(tx);
+                }
+
+               
                 bankAccounts.UpdateAccount(useraccount);
 
             }
@@ -596,10 +692,50 @@ namespace MySQLSep16
                 CarModel swappingCar = cardata.GetCarByID(swap.CarID);
                 swappingCar.userID = swap.BuyerID;
                 swap.Accepted=true;
+
+                
                 CheckingAccountModel buyer = bankAccounts.GetAccountByUserID(swap.BuyerID);
-                buyer.CurrentBalance-= swap.AskP;
+                if (buyer.CurrentBalance < swap.AskP)
+                {
+                    LoanModel loan = new LoanModel
+                    {
+                        UserID = swap.BuyerID,
+                        original_amount = swap.AskP,
+                        MonthlyPayment = 0,
+                        rate = .12,
+                        Term = 12
+                    };
+                    loans.CreateLoan(loan);
+                    Console.WriteLine("You took a loan to pay for the car of "+swap.AskP);
+                }
+                else
+                {
+                    buyer.CurrentBalance -= swap.AskP;
+                    TransactionModel tx1 = new TransactionModel
+                    {
+                        Amount = swap.AskP,
+                        Type = true,
+                        Date = DateTime.Now,
+                        Source = "Paying for Used Car with ID " + swappingCar.CarID,
+                        UserID = swap.BuyerID
+                    };
+                    transactions.CreateTransaction(tx1);
+                }
+
+
                 CheckingAccountModel seller = bankAccounts.GetAccountByUserID(swap.SellerID);
                 seller.CurrentBalance += swap.AskP;
+                TransactionModel tx = new TransactionModel
+                {
+                    Amount = swap.AskP,
+                    Type = false,
+                    Date = DateTime.Now,
+                    Source = "Payment for Used Car with ID " + swappingCar.CarID,
+                    UserID = swap.SellerID
+                };
+                transactions.CreateTransaction(tx);
+
+
 
                 offers.DeleteOffer(swap);
                 cardata.UpdateCar(swappingCar);
@@ -736,6 +872,9 @@ namespace MySQLSep16
             Console.WriteLine("Engine: "+enginedata.GetEngineByID(cardata.GetCarByID(x.CarID).fgn_EngineID)+"Sponser: "/*  ADD sponser part here when sponsership data access is there*/);
             
         }
+        
+        
+        //put with timesystem
         public void updatePrices()
         {
             List<CarModelsModel> allModels = carmodeldata.getAllCarModels();
@@ -766,6 +905,32 @@ namespace MySQLSep16
                 }
             }
         }
-        
+        public void payLoans()
+        {
+            List<LoanModel> allLoans = loans.getAllLoans();
+            foreach (LoanModel x in allLoans){
+                if (x.Term < x.MonthlyPayment)
+                {
+                    loans.DeletebyLoanID(x.LoanID);
+                }
+                else
+                {
+                    CheckingAccountModel currentDebtor = bankAccounts.GetAccountByUserID(userID);
+                    currentDebtor.CurrentBalance -= (int)loans.CalculatePayment(x.original_amount, x.Term);
+                    x.MonthlyPayment++;
+                    loans.UpdateLoan(x);
+                    bankAccounts.UpdateAccount(currentDebtor);
+                    TransactionModel loanPayment = new TransactionModel
+                    {
+                        Type = true,
+                        UserID = userID,
+                        Date = DateTime.Now,
+                        Source="Loan Payment for Load ID"+x.LoanID,
+                        Amount=(int)loans.CalculatePayment(x.original_amount, x.Term)
+                    };
+                    transactions.CreateTransaction(loanPayment);
+                }
+            }
+        }
     }
 }
