@@ -39,9 +39,9 @@ namespace MySQLSep16.DataAccess
         }
         public CheckingAccountModel GetAccountByUserID(int id)
         {
-            string sql = "SELECT * FROM `checkingaccount` WHERE 'checkingaccount'.UserID = @UserID";
+            string sql = "SELECT * FROM `checkingaccount` WHERE UserID = @UserID";
             List<CheckingAccountModel> Users = _db.LoadData<CheckingAccountModel, dynamic>(sql, new { UserID = id });
-            return Users.FirstOrDefault(u => u.AccountID == id);
+            return Users[0];
         }
     }
 }

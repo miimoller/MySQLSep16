@@ -61,7 +61,7 @@ foreach (CarModel x in cars)
 */
 UI ui = new UI();
 ui.userID = 1;
-ui.printUserCars();
+ui.showMainScreen();
 
 
 /*

@@ -27,6 +27,7 @@ namespace MySQLSep16
         UserInfoData userinfo = new UserInfoData();
         SearchData searches = new SearchData();
         TransactionDataAccess transactions = new TransactionDataAccess();
+        SponsershipData sponsers = new SponsershipData();
         public int userID { get; set; }
 
         
@@ -93,12 +94,12 @@ namespace MySQLSep16
                     table.AddRow(new Markup("[blue]2[/]"), new Panel("Market Place"));
                     table.AddRow(new Markup("[blue]3[/]"), new Panel("Garage"));
                     table.AddRow(new Markup("[blue]4[/]"), new Panel("Bank"));
-                    table.AddRow(new Markup("[blue]5[/]"), new Panel("Soundtrack"));
-                    table.AddRow(new Markup("[blue]6[/]"), new Panel("Exit"));
+                    
+                    table.AddRow(new Markup("[blue]5[/]"), new Panel("Exit"));
 
 
                 });
-            MainScreenTrigger(getInt("Enter a valid choice",new List<int> { 0,1,2,3,4,}));
+            MainScreenTrigger(getInt("Enter a valid choice",new List<int> { 0,1,2,3,4,5}));
         }
         public void showDrive()
         {
@@ -112,11 +113,11 @@ namespace MySQLSep16
             if (driving.sponsor != 6)
             {
                 CheckingAccountModel account=bankAccounts.GetAccountByUserID(userID);
-                account.CurrentBalance += 100;//*****make specific once sponsershipdataaccess is available*****
+                account.CurrentBalance += sponsers.GetSponserByID(driving.sponsor).SponsorAmt;
                 bankAccounts.UpdateAccount(account);
                 TransactionModel sponser = new TransactionModel
                 {
-                    Amount=100,//make specific again
+                    Amount= sponsers.GetSponserByID(driving.sponsor).SponsorAmt,
                     Date=DateTime.Now,
                     Source="Sponsership for CarID: "+driving.CarID,
                     Type=false,
@@ -231,6 +232,7 @@ namespace MySQLSep16
                 case 2:
                     Console.Clear();
                     showMPMain();
+
                     break;
                 case 3:
                     Console.Clear();
@@ -273,7 +275,7 @@ namespace MySQLSep16
 
         public void showAccount()
         {
-            CheckingAccountModel x=bankAccounts.GetAccountByUserID(userID);
+            CheckingAccountModel x=bankAccounts.GetAccountByID(userID);
             Console.WriteLine("AccountID: "+x.AccountID+"Current Balance: "+x.CurrentBalance+"Current Loans: "+x.Loans);
             showMainScreen();
         }
@@ -757,11 +759,15 @@ namespace MySQLSep16
                     break;
                 case 1:
                     Console.Clear();
-                    buyUsed();
+                    showBuyUsedMarketPlace();
                     break;
                 case 2:
                     Console.Clear();
-                    sellUsed();
+                    showSearch();
+                    break;
+                case 3:
+                    Console.Clear();
+                    showBuyFromMarketPlace();
                     break;
 
 
@@ -815,7 +821,7 @@ namespace MySQLSep16
             {
                 Console.WriteLine(msg);
                 cont = Int32.TryParse(Console.ReadLine(), out output);
-                if (potentials.Contains(output))
+                if (!potentials.Contains(output))
                 {
                     cont = false;
                 }
@@ -878,30 +884,32 @@ namespace MySQLSep16
         public void updatePrices()
         {
             List<CarModelsModel> allModels = carmodeldata.getAllCarModels();
-            
+
             foreach (CarModelsModel x in allModels)
             {
-                List<SearchModel> searchForCar = searches.GetSearchesByCarID(x.ModelID);
-                if (searchForCar.Count > 20)
-                {
-                    CarModelsModel changingCar = carmodeldata.GetCarByID(searchForCar[0].CarID);
-                    changingCar.Price= (int)((double)changingCar.Price*1.1);
+                if (x.ModelID != 9) { 
+                    List<SearchModel> searchForCar = searches.GetSearchesByCarID(x.ModelID);
+                    if (searchForCar.Count > 20)
+                    {
+                        CarModelsModel changingCar = carmodeldata.GetCarByID(searchForCar[0].CarID);
+                        changingCar.Price = (int)((double)changingCar.Price * 1.1);
 
-                    carmodeldata.UpdateCar(changingCar);
-                }
-                if (searchForCar.Count > 40)
-                {
-                    CarModelsModel changingCar = carmodeldata.GetCarByID(searchForCar[0].CarID);
-                    changingCar.Price = (int)((double)changingCar.Price * 1.2);
+                        carmodeldata.UpdateCar(changingCar);
+                    }
+                    if (searchForCar.Count > 40)
+                    {
+                        CarModelsModel changingCar = carmodeldata.GetCarByID(searchForCar[0].CarID);
+                        changingCar.Price = (int)((double)changingCar.Price * 1.2);
 
-                    carmodeldata.UpdateCar(changingCar);
-                }
-                if (searchForCar.Count > 60)
-                {
-                    CarModelsModel changingCar = carmodeldata.GetCarByID(searchForCar[0].CarID);
-                    changingCar.Price = (int)((double)changingCar.Price * 1.3);
+                        carmodeldata.UpdateCar(changingCar);
+                    }
+                    if (searchForCar.Count > 60)
+                    {
+                        CarModelsModel changingCar = carmodeldata.GetCarByID(searchForCar[0].CarID);
+                        changingCar.Price = (int)((double)changingCar.Price * 1.3);
 
-                    carmodeldata.UpdateCar(changingCar);
+                        carmodeldata.UpdateCar(changingCar);
+                    }
                 }
             }
         }
