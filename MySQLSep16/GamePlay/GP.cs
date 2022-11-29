@@ -34,7 +34,10 @@ namespace MySQLSep16.GamePlay
         public static int exitCode { get; set; }
         public static CarModel drivingCar { get; set; }
 
-        
+
+        public static CheckingAccountData accounts = new CheckingAccountData();
+        public static TransactionDataAccess txts = new TransactionDataAccess();
+
         /*
         
         */
@@ -108,7 +111,7 @@ namespace MySQLSep16.GamePlay
 
             for (int i = gameBoard.GetLength(0) - 51; i >= 0; i -= 5)
             {
-                gasAmount -= 5;
+                gasAmount -= 50;
                 if (!hit)
                 {
                     if (gasAmount < 0)
@@ -173,6 +176,21 @@ namespace MySQLSep16.GamePlay
                         {
 
                             //************add removing money spent for user balance
+                            CheckingAccountModel currentAccount=accounts.GetAccountByUserID(drivingCar.userID);
+                            currentAccount.CurrentBalence -= moneySpent;
+                            accounts.UpdateAccount(currentAccount);
+                            TransactionModel model = new TransactionModel
+                            {
+                                UserID = drivingCar.userID,
+                                Amount = moneySpent,
+                                Date = DateTime.Now,
+                                Source = "Driving gas for CarID: " + drivingCar.CarID,
+                                Type = true
+                            };
+
+
+                            txts.CreateTransaction(model);
+
                             return exitCode;
                         }
                     }
@@ -233,7 +251,7 @@ namespace MySQLSep16.GamePlay
                         }
                         else if (tempSect[y + i, x + j].symbolType == GameSpace.space.gas)
                         {
-                            gasAmount += 5;
+                            gasAmount += 25;
                             moneySpent += 10;
                         }
                         else if (tempSect[y + i, x + j].symbolType == GameSpace.space.sponserS)

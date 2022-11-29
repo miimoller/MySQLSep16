@@ -12,5 +12,10 @@ namespace MySQLSep16.Models
         public string EngineType { get; set; }
         public int FuelScaling { get; set; }
         public int Price { get; set; }
+
+        public string toString()
+        {
+            return $"EngineID: {EngineID} EngineType: {EngineType} FuelScaling: {FuelScaling} Price: {Price}";
+        }
     }
 }

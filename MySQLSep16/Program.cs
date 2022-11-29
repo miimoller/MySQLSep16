@@ -1,6 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using Google.Protobuf.WellKnownTypes;
 using MySQLSep16;
+using MultithreadingApplication;
 using MySQLSep16.DataAccess;
 using MySQLSep16.GamePlay;
 using MySQLSep16.Models;
@@ -8,7 +9,7 @@ using Org.BouncyCastle.Asn1.X509;
 using System.ComponentModel;
 using System.Net.Http.Headers;
 
-Console.BackgroundColor = ConsoleColor.DarkGreen;
+//Console.BackgroundColor = ConsoleColor.DarkGreen;
 Console.Clear();
 /*
 string drive = "▄█ ▀ █▀▄ █▀█ █ █░█ █▀▀\r\n░█ ▄ █▄▀ █▀▄ █ ▀▄▀ ██▄";
@@ -59,10 +60,9 @@ foreach (CarModel x in cars)
     Console.WriteLine();
 }
 */
+ThreadCreationProgram.RunStartMusic();
 UI ui = new UI();
-ui.userID = 1;
-ui.showMainScreen();
-
+ui.showLogInMain();
 
 /*
 CarData cardata = new CarData();

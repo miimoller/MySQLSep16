@@ -34,7 +34,7 @@ namespace MySQLSep16.DataAccess
 
         public void CreateCar(CarModel c)//fix this too
         {
-            string sql = "INSERT INTO `car` (`Brand`, `fgn_ModelID`, `fgn_EngineID`, 'currentFuel', 'sponsor', `userID`, `Finance`) VALUES (@Brand, @fgn_ModelID, @fgn_EngineID, @currentFuel, @sponsor, @userID, @Finance )";
+            string sql = "INSERT INTO `car` (`Brand`, `fgn_ModelID`, `fgn_EngineID`, `currentFuel`, `sponsor`, `userID`, `Finance`) VALUES (@Brand, @fgn_ModelID, @fgn_EngineID, @currentFuel, @sponsor, @userID, @Finance )";
             _db.SaveData(sql, c);
         }
 

@@ -21,8 +21,8 @@ namespace MySQLSep16.DataAccess
 
         public List<TransactionModel> GetTransactionByUserID(int id)
         {
-            string sql = "Select * FROM transactions WHERE 'UserID' = @UserID";
-            List<TransactionModel> accounts = _db.LoadData<TransactionModel, dynamic>(sql, new { transaction_ID = id });
+            string sql = "Select * FROM transactions WHERE UserID = @UserID";
+            List<TransactionModel> accounts = _db.LoadData<TransactionModel, dynamic>(sql, new { UserID = id });
 
             return accounts;
         }

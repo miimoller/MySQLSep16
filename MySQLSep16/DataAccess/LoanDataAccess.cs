@@ -46,13 +46,13 @@ namespace MySQLSep16.DataAccess
         public LoanModel GetLoanByID(int ID)
         {
             string sql = "SELECT * FROM 'loans' WHERE LoanID = @LoanID";
-            List<LoanModel> Loans = _db.LoadData<LoanModel, dynamic>(sql, new { UserID = ID });
-            return Loans.FirstOrDefault(L => L.UserID == ID);
+            List<LoanModel> Loans = _db.LoadData<LoanModel, dynamic>(sql, new { LoanID = ID });
+            return Loans[0];
         }
 
         public List<LoanModel> GetLoansByUserID(int ID)
         {
-            string sql = "SELECT * FROM 'loans' WHERE UserID = @UserID";
+            string sql = "SELECT * FROM loans WHERE UserID = @UserID";
             List<LoanModel> Loans = _db.LoadData<LoanModel, dynamic>(sql, new { UserID = ID });
             return Loans;
         }

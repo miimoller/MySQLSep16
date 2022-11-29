@@ -12,7 +12,7 @@ namespace MySQLSep16.DataAccess
         private readonly SqlDataAccess _db = new SqlDataAccess();
         public void CreateAccount(CheckingAccountModel c)
         {
-            string sql = "INSERT INTO `checkingaccount` (`CurrentBalance`, `Loans`, 'UserID') VALUES (@CurrentBalance, @Loans, @UserID)";
+            string sql = "INSERT INTO `checkingaccount` (`CurrentBalence`, `Loans`, `UserID`) VALUES (@CurrentBalence, @Loans, @UserID)";
             _db.SaveData(sql, c);
         }
         public List<CheckingAccountModel> getAllAccounts()
@@ -28,7 +28,7 @@ namespace MySQLSep16.DataAccess
         }
         public void UpdateAccount(CheckingAccountModel U)
         {
-            string sql = "UPDATE `checkingaccount` SET `CurrentBalance`= @CurrentBalance,`Loans`=@Loans WHERE 'checkingaccount'.`AccountID`= @AccountID";
+            string sql = "UPDATE `checkingaccount` SET `CurrentBalence`= @CurrentBalence,`Loans`=@Loans WHERE `AccountID`= @AccountID";
             _db.SaveData(sql, U);
         }
         public CheckingAccountModel GetAccountByID(int id)

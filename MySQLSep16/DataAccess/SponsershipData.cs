@@ -21,7 +21,7 @@ namespace MySQLSep16.DataAccess
         public SponsershipModel GetSponserByID(int id)
         {
             string sql = "SELECT * FROM sponsorship WHERE sponsorshipID = @sponsorshipID";
-            List<SponsershipModel> sponsers = _db.LoadData<SponsershipModel, dynamic>(sql, new { sponsershipID = id });
+            List<SponsershipModel> sponsers = _db.LoadData<SponsershipModel, dynamic>(sql, new { sponsorshipID = id });
             return sponsers[0];
         }
     }

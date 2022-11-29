@@ -13,6 +13,7 @@ namespace MySQLSep16.Models
         public double rate { get; set; }
         public int Term { get; set; }
         public double MonthlyPayment { get; set; }
+                     
         public int LoanID { get; set; }
     }
 }

@@ -11,5 +11,10 @@ namespace MySQLSep16.Models
         public int sponsorshipID { get; set; }
         public string SponsorName { get; set; }
         public int SponsorAmt { get; set; }
+
+        public string toString()
+        {
+            return SponsorName + " Amount: " + SponsorAmt;
+        }
     }
 }

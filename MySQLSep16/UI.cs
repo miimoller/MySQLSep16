@@ -1,4 +1,5 @@
 ﻿using Google.Protobuf.WellKnownTypes;
+using MultithreadingApplication;
 using MySQLSep16.DataAccess;
 using MySQLSep16.GamePlay;
 using MySQLSep16.Models;
@@ -7,6 +8,7 @@ using Org.BouncyCastle.Asn1;
 using Spectre.Console;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,29 +19,56 @@ namespace MySQLSep16
 {
     internal class UI
     {
-        CarData cardata = new CarData();
+         CarData cardata = new CarData();
         CarModelData carmodeldata = new CarModelData();
-        ManufacturerDataAccess maunfacters = new ManufacturerDataAccess();
-        OfferData offers = new OfferData();
-        CheckingAccountData bankAccounts = new CheckingAccountData();
-        LoanDataAccess loans = new LoanDataAccess();
-        EngineData enginedata = new EngineData();
-        UserInfoData userinfo = new UserInfoData();
+         ManufacturerDataAccess maunfacters = new ManufacturerDataAccess();
+         OfferData offers = new OfferData();
+         CheckingAccountData bankAccounts = new CheckingAccountData();
+         LoanDataAccess loans = new LoanDataAccess();
+         EngineData enginedata = new EngineData();
+         UserInfoData userinfo = new UserInfoData();
         SearchData searches = new SearchData();
         TransactionDataAccess transactions = new TransactionDataAccess();
-        SponsershipData sponsers = new SponsershipData();
-        public int userID { get; set; }
+         SponsershipData sponsers = new SponsershipData();
+         PwdDataAccess passwords = new PwdDataAccess();
+         SecurityDataAccess questions = new SecurityDataAccess();
+         TimeData times = new TimeData();
 
+        public static int userID { get; set; }
+        
         
         public void showLogInMain()
         {
-            //stuff
-            int choice = 0;
+            Console.Clear();
+            var table = new Table();
+
+            AnsiConsole.Live(table)
+                .Start(ctx =>
+                {
+                    Console.WriteLine("\r\n░██╗░░░░░░░██╗███████╗██╗░░░░░░█████╗░░█████╗░███╗░░░███╗███████╗\r\n░██║░░██╗░░██║██╔════╝██║░░░░░██╔══██╗██╔══██╗████╗░████║██╔════╝\r\n░╚██╗████╗██╔╝█████╗░░██║░░░░░██║░░╚═╝██║░░██║██╔████╔██║█████╗░░\r\n░░████╔═████║░██╔══╝░░██║░░░░░██║░░██╗██║░░██║██║╚██╔╝██║██╔══╝░░\r\n░░╚██╔╝░╚██╔╝░███████╗███████╗╚█████╔╝╚█████╔╝██║░╚═╝░██║███████╗\r\n░░░╚═╝░░░╚═╝░░╚══════╝╚══════╝░╚════╝░░╚════╝░╚═╝░░░░░╚═╝╚══════╝");
+                    table.Centered();
+
+                    table.AddColumn(new TableColumn(" ").Centered());
+                    table.AddColumn(new TableColumn("User").Centered());
+
+
+                    table.AddRow(new Markup("[blue]1[/]"), new Panel("Sign in"));
+                    table.AddRow(new Markup("[blue]2[/]"), new Panel("Sign  up"));
+
+
+                });
+
+
+
+
+        
+        int choice = getInt("Enter your choice",new List<int>{ 1,2});
             logInTriggers(choice);
         }
 
         public void logInTriggers(int choice)
         {
+            Console.Clear();
             switch (choice) {
                 case 0:
                     Environment.Exit(0);
@@ -54,27 +83,128 @@ namespace MySQLSep16
         }
         public void showSignUp()
         {
-            //stuff
-            showRules();
+            Console.Clear();
+            Console.WriteLine("░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░\r\n░░░░██████╗██╗░██████╗░███╗░░██╗░░░██╗░░░██╗██████╗░░░░\r\n░░░██╔════╝██║██╔════╝░████╗░██║░░░██║░░░██║██╔══██╗░░░\r\n░░░╚█████╗░██║██║░░██╗░██╔██╗██║░░░██║░░░██║██████╔╝░░░\r\n░░░░╚═══██╗██║██║░░╚██╗██║╚████║░░░██║░░░██║██╔═══╝░░░░\r\n░░░██████╔╝██║╚██████╔╝██║░╚███║░░░╚██████╔╝██║░░░░░░░░\r\n░░░╚═════╝░╚═╝░╚═════╝░╚═╝░░╚══╝░░░░╚═════╝░╚═╝░░░░░░░░\r\n░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░\r\n");
             
-        }
+
+                Console.WriteLine("Please input your email");
+                string email = Console.ReadLine();
+
+                Console.WriteLine("Please input your password");
+                string password = Console.ReadLine();
+
+                Console.WriteLine("Please confirm your password");
+
+                while (Console.ReadLine() != password)
+                {
+                    Console.WriteLine("Please try again");
+                }
+
+                Console.WriteLine("Please create a username");
+                string username = Console.ReadLine();
+
+                Console.WriteLine("We need you to add some security questions, you will later need these to access parts of the game");
+                Console.WriteLine("What was the name of your first pet?");
+                string sq1 = Console.ReadLine();
+                Console.WriteLine("What City do you live in?");
+                string sq2 = Console.ReadLine();
+                Console.WriteLine("What Elemantary School did you attend?");
+                string sq3 = Console.ReadLine();
+               
+
+
+                UserInfoModel person = new UserInfoModel
+                {
+                    Email = email,
+                    Username = username,
+                    SecurityQuestion=0
+
+                };
+
+                userinfo.CreateUser(person);
+
+            List<UserInfoModel> allusers = userinfo.getAllUsers();
+
+            UserInfoModel newperson = userinfo.getAllUsers().Last();
+
+                SecurityQuestionModel q = new SecurityQuestionModel
+                {
+                    UserID = newperson.UserID,
+                    Question1 = sq1,
+                    Question2 = sq2,
+                    Question3 = sq3
+
+                };
+                questions.CreateAnswers(q);
+
+                NotPwdModel npwd = new NotPwdModel
+                {
+                    UserID = newperson.UserID,
+                    Pwd = password
+                };
+
+                CheckingAccountModel newaccount = new CheckingAccountModel
+                {
+                    UserID = newperson.UserID,
+                    CurrentBalence = 10000,
+                    Loans = 0
+                };
+
+                TimeModel newtime = new TimeModel
+                {
+                    UserID = newperson.UserID,
+                    TimePassed=0
+                };
+                times.CreateTime(newtime);
+                bankAccounts.CreateAccount(newaccount);
+                passwords.CreatePwd(npwd);
+
+                showRules();
+            }
+        
 
         public void showRules()
         {
-            //stuff
+            Console.Clear();
+            Console.WriteLine("Make money, dont die!!");
             showMainScreen();
         }
         public void showLogInScreen()
         {
-            //stuff
-            int usID = 0;
-            userID = usID;
+            Console.Clear();
+            Console.WriteLine("Enter your username");
+            string user = Console.ReadLine();
+            Console.WriteLine("Enter your password");
+            string pass = Console.ReadLine();
 
+            List<UserInfoModel> allusers=userinfo.getAllUsers();
+            bool cont = true;
+            if (cont)
+            {
+                foreach (UserInfoModel x in allusers)
+                {
+                    if (x.Username == user)
+                    {
+                        if (passwords.GetPasswordByID(x.UserID).Pwd == pass)
+                        {
+                            userID = x.UserID;
+                            cont = false;
+                        }
+                    }
+                }
+            }
+            if (cont)
+            {
+                showLogInScreen();
+            }
+
+
+            ThreadCreationProgram.Run();
             showMainScreen();
         }
         public void showMainScreen()
         {
-            //stuff
+            Console.Clear();
             int choice=0;
             var table = new Table();
 
@@ -103,17 +233,23 @@ namespace MySQLSep16
         }
         public void showDrive()
         {
-           // userID = 1;
+            Console.Clear();
             List<CarModel> userCars = cardata.GetCarsByUserID(userID);
             List<int>ids = printUserCars();
-           
 
+            ids.Add(-1);
 
-            CarModel driving = cardata.GetCarByID(getInt("Enter a valid ID of car you wanna drive",ids));
+            int choice = getInt("Enter a valid ID of car you wanna drive, or -1 to go back", ids);
+            if (choice == -1)
+            {
+                showMainScreen();
+            }
+            CarModel driving = cardata.GetCarByID(choice);
+            
             if (driving.sponsor != 6)
             {
                 CheckingAccountModel account=bankAccounts.GetAccountByUserID(userID);
-                account.CurrentBalance += sponsers.GetSponserByID(driving.sponsor).SponsorAmt;
+                account.CurrentBalence += sponsers.GetSponserByID(driving.sponsor).SponsorAmt;
                 bankAccounts.UpdateAccount(account);
                 TransactionModel sponser = new TransactionModel
                 {
@@ -135,24 +271,24 @@ namespace MySQLSep16
                     break;
                 case 1:
                     Console.WriteLine("You made it to starbucks");
-                    driving.sponsor = 1;
+                    driving.sponsor = 4;
                     
                 break;
                 case 2:
                     Console.WriteLine("You made it to tacobell");
-                    driving.sponsor = 2;
+                    driving.sponsor = 5;
                     break;
                 case 3:
                     Console.WriteLine("You made it to mcdonalds");
-                    driving.sponsor = 3;
+                    driving.sponsor = 1;
                     break;
                 case 4:
                     Console.WriteLine("You made it to Chicfila");
-                    driving.sponsor = 4;
+                    driving.sponsor = 2;
                     break;
                 case 5:
                     Console.WriteLine("You made it to Houstons");
-                    driving.sponsor = 5;
+                    driving.sponsor = 3;
                     break;
                 case 8:
                     Console.WriteLine("You hit a car");
@@ -171,7 +307,7 @@ namespace MySQLSep16
         }
         public void showMPMain()
         {
-            //stuff
+            Console.Clear();
             int choice = 0;
             Console.WriteLine("\r\n███╗░░░███╗░█████╗░██████╗░██╗░░██╗███████╗████████╗██████╗░██╗░░░░░░█████╗░░█████╗░███████╗\r" +
                 "\n████╗░████║██╔══██╗██╔══██╗██║░██╔╝██╔════╝╚══██╔══╝██╔══██╗██║░░░░░██╔══██╗██╔══██╗██╔════╝\r" +
@@ -196,9 +332,9 @@ namespace MySQLSep16
 
                     // Add some rows
 
-                    table.AddRow(new Markup("[blue]1[/]"), new Panel("Used Marketplace"));
-                    table.AddRow(new Markup("[blue]2[/]"), new Panel("Search"));
-                    table.AddRow(new Markup("[blue]3[/]"), new Panel("Buy"));
+                    table.AddRow(new Markup("[blue]1[/]"), new Panel("New Marketplace"));
+                    table.AddRow(new Markup("[blue]2[/]"), new Panel("Used Marketplace"));
+                    table.AddRow(new Markup("[blue]3[/]"), new Panel("Search"));
                     table.AddRow(new Markup("[blue]4[/]"), new Panel("Exit"));
 
                 });
@@ -209,8 +345,14 @@ namespace MySQLSep16
         }
         public void showCollection()
         {
+            Console.Clear();
             List<int> ids=printUserCars();
-            int choice = getInt("Enter the Id of the car you want more info for", ids);
+            ids.Add(-1);
+            int choice = getInt("Enter the Id of the car you want more info for, or -1 to go back", ids);
+            if (choice == -1)
+            {
+                showMainScreen();
+            }
             CarModel showCar = cardata.GetCarByID(choice);
             
             printCar(showCar);
@@ -219,10 +361,10 @@ namespace MySQLSep16
         }
         public void MainScreenTrigger(int choice)
         {
-
+            Console.Clear();
             switch (choice)
             {
-                case 0://quit game
+                case 5://quit game
                     Environment.Exit(0);
                     break;
                 case 1:
@@ -250,7 +392,8 @@ namespace MySQLSep16
 
         public void showBankMain()
         {
-            
+            Console.Clear();
+
             int choice = 0;
             var table = new Table();
 
@@ -275,12 +418,16 @@ namespace MySQLSep16
 
         public void showAccount()
         {
-            CheckingAccountModel x=bankAccounts.GetAccountByID(userID);
-            Console.WriteLine("AccountID: "+x.AccountID+"Current Balance: "+x.CurrentBalance+"Current Loans: "+x.Loans);
+            Console.Clear();
+            CheckingAccountModel x=bankAccounts.GetAccountByUserID(userID);
+            Console.WriteLine("AccountID: "+x.AccountID+"Current Balance: "+x.CurrentBalence+"Current Loans: "+x.Loans);
+            Console.ReadLine();
             showMainScreen();
+
         }
         public void showLoans()
         {
+            Console.Clear();
             List<LoanModel> userLoans=loans.GetLoansByUserID(userID);
             foreach (LoanModel x in userLoans)
             {
@@ -292,6 +439,7 @@ namespace MySQLSep16
 
         public void bankTriggers(int choice)
         {
+            Console.Clear();
             switch (choice)
             {
                 case 0:
@@ -311,6 +459,7 @@ namespace MySQLSep16
 
         public void showTransactions()
         {
+            Console.Clear();
             List<TransactionModel>userTxs=transactions.GetTransactionByUserID(userID);
             foreach (TransactionModel x in userTxs)
             {
@@ -325,10 +474,12 @@ namespace MySQLSep16
                 }
                 Console.WriteLine("ID: "+x.transaction_ID+"Date: "+x.Date+type+" on "+x.Date+" for "+x.Amount+"\nSource: "+x.Source);
             }
+            Console.ReadLine();
+            showMainScreen();
         }
         public void showBuyFromMarketPlace()
         {
-            //stuff
+            Console.Clear();
             int choice = 0;
             var table = new Table();
 
@@ -356,7 +507,7 @@ namespace MySQLSep16
         }
         public void showBuyUsedMarketPlace()
         {
-            //stuff
+            Console.Clear();
             int choice = 0;
             var text = new Table().Centered();
             AnsiConsole.Live(text)
@@ -404,6 +555,7 @@ namespace MySQLSep16
         }
         public void showSearch()
         {
+            Console.Clear();
             ManufacturerModel choosenManu;
             
 
@@ -463,7 +615,7 @@ namespace MySQLSep16
         }
         public void showBuyNewCar()
         {
-            //stuff
+            Console.Clear();
             List<ManufacturerModel> manus = maunfacters.getAllManufacturer();
             List<CarModelsModel> allcars = carmodeldata.getAllCarModels();
             List<int> manuIds = new List<int>();
@@ -484,10 +636,23 @@ namespace MySQLSep16
                     Console.WriteLine(allcars[2].ModelID + "Model Name: " + allcars[2].ModelName);
                     int choice2 = getInt("Enter ModelID You want to buy", new List<int> { allcars[0].ModelID, allcars[1].ModelID, allcars[2].ModelID });
                     CarModelsModel x=carmodeldata.GetCarByID(choice2);
-                    if (bankAccounts.GetAccountByUserID(userID).CurrentBalance < x.Price)
+                    CarModel newCar = new CarModel
+                    {
+                        Brand = 1,
+                        fgn_ModelID = x.ModelID,
+                        sponsor = 6,
+                        fgn_EngineID = 1,
+                        userID = userID,
+                        Finance = false
+
+                    };
+                    cardata.CreateCar(newCar);
+
+                    if (bankAccounts.GetAccountByUserID(userID).CurrentBalence < x.Price)
                     {
                         LoanModel loan = new LoanModel
                         {
+                            UserID= userID,
                             original_amount = x.Price,
                             rate =0.12,
                             Term=12,
@@ -498,7 +663,7 @@ namespace MySQLSep16
                     }
                     else
                     {
-                        bankAccounts.GetAccountByUserID(userID).CurrentBalance -= x.Price;
+                        bankAccounts.GetAccountByUserID(userID).CurrentBalence -= x.Price;
                         TransactionModel tx = new TransactionModel
                         {
                             Amount = x.Price,
@@ -519,10 +684,25 @@ namespace MySQLSep16
 
                     int choice2 = getInt("Enter ModelID You want to buy", new List<int> { allcars[3].ModelID, allcars[4].ModelID, allcars[5].ModelID });
                     CarModelsModel x = carmodeldata.GetCarByID(choice2);
-                    if (bankAccounts.GetAccountByUserID(userID).CurrentBalance < x.Price)
+                    CarModel newCar = new CarModel
+                    {
+                        Brand = 2,
+                        fgn_ModelID = x.ModelID,
+                        sponsor = 6,
+                        fgn_EngineID = 1,
+                        userID = userID,
+                        Finance = false
+
+                    };
+                    cardata.CreateCar(newCar);
+
+
+
+                    if (bankAccounts.GetAccountByUserID(userID).CurrentBalence < x.Price)
                     {
                         LoanModel loan = new LoanModel
                         {
+                            UserID=userID,
                             original_amount = x.Price,
                             rate = 0.12,
                             Term = 12,
@@ -533,7 +713,7 @@ namespace MySQLSep16
                     }
                     else
                     {
-                        bankAccounts.GetAccountByUserID(userID).CurrentBalance -= x.Price;
+                        bankAccounts.GetAccountByUserID(userID).CurrentBalence -= x.Price;
                         TransactionModel tx = new TransactionModel
                         {
                             Amount = x.Price,
@@ -553,10 +733,22 @@ namespace MySQLSep16
 
                     int choice2 = getInt("Enter ModelID You want to buy", new List<int> { allcars[6].ModelID, allcars[7].ModelID, allcars[8].ModelID });
                     CarModelsModel x = carmodeldata.GetCarByID(choice2);
-                    if (bankAccounts.GetAccountByUserID(userID).CurrentBalance < x.Price)
+                    CarModel newCar = new CarModel
+                    {
+                        Brand=3,
+                        fgn_ModelID= x.ModelID,
+                        sponsor = 6,
+                        fgn_EngineID = 1,
+                        userID = userID,
+                        Finance = false
+                    };
+                    cardata.CreateCar(newCar);
+
+                    if (bankAccounts.GetAccountByUserID(userID).CurrentBalence < x.Price)
                     {
                         LoanModel loan = new LoanModel
                         {
+                            UserID=userID,
                             original_amount = x.Price,
                             rate = 0.12,
                             Term = 12,
@@ -567,7 +759,7 @@ namespace MySQLSep16
                     }
                     else
                     {
-                        bankAccounts.GetAccountByUserID(userID).CurrentBalance -= x.Price;
+                        bankAccounts.GetAccountByUserID(userID).CurrentBalence -= x.Price;
                         TransactionModel tx = new TransactionModel
                         {
                             Amount = x.Price,
@@ -585,6 +777,7 @@ namespace MySQLSep16
         }
         public void showBuyEngine()
         {
+            Console.Clear();
             List<EngineModel> currentEngines = enginedata.getAllEngines();
             List<int> engineIds = new List<int>();
             foreach (EngineModel x in currentEngines)
@@ -605,7 +798,7 @@ namespace MySQLSep16
                 cardata.UpdateCar(engineCar);
                 
                 CheckingAccountModel useraccount = bankAccounts.GetAccountByUserID(userID);
-                if (useraccount.CurrentBalance < currentEngine.Price)
+                if (useraccount.CurrentBalence < currentEngine.Price)
                 {
                     LoanModel engineLoan = new LoanModel
                     {
@@ -619,7 +812,7 @@ namespace MySQLSep16
                 }
                 else
                 {
-                    useraccount.CurrentBalance -= currentEngine.Price;
+                    useraccount.CurrentBalence -= currentEngine.Price;
 
                     TransactionModel tx = new TransactionModel
                     {
@@ -640,8 +833,9 @@ namespace MySQLSep16
         }
         public void newMPTrigger(int choice)
         {
+            Console.Clear();
             switch (choice) {
-                case 0:
+                case 3:
                     Console.Clear();
                     showMPMain();
                     break;
@@ -659,6 +853,7 @@ namespace MySQLSep16
         public void sellUsed()
         {
             //stuff
+            Console.Clear();
             List<int> ids=printUserCars();
             CarModel selling = cardata.GetCarByID(getInt("Enter a valid ID of car you wanna sell",ids));
             int offerprice=getInt("Enter price that you wanna sell your car for");
@@ -678,11 +873,12 @@ namespace MySQLSep16
         }
         public void buyUsed()
         {
+            Console.Clear();
             List<OfferModel> currentOffers= offers.getAllOffers();
             List<int> offerIDs = new List<int>();
             foreach (OfferModel x in currentOffers)
             {
-                Console.WriteLine($"OfferID: {x.OfferID}, Asking Price: {x.AskP}, From: {userinfo.GetUserByID(x.SellerID).UserName}");
+                Console.WriteLine($"OfferID: {x.OfferID}, Asking Price: {x.AskP}, From: {userinfo.GetUserByID(x.SellerID).Username}");
                 printCar(cardata.GetCarByID(x.CarID));
                 offerIDs.Add(x.OfferID);
             }
@@ -696,8 +892,8 @@ namespace MySQLSep16
                 swap.Accepted=true;
 
                 
-                CheckingAccountModel buyer = bankAccounts.GetAccountByUserID(swap.BuyerID);
-                if (buyer.CurrentBalance < swap.AskP)
+                CheckingAccountModel buyer = bankAccounts.GetAccountByUserID(userID);
+                if (buyer.CurrentBalence < swap.AskP)
                 {
                     LoanModel loan = new LoanModel
                     {
@@ -712,7 +908,7 @@ namespace MySQLSep16
                 }
                 else
                 {
-                    buyer.CurrentBalance -= swap.AskP;
+                    buyer.CurrentBalence -= swap.AskP;
                     TransactionModel tx1 = new TransactionModel
                     {
                         Amount = swap.AskP,
@@ -726,7 +922,7 @@ namespace MySQLSep16
 
 
                 CheckingAccountModel seller = bankAccounts.GetAccountByUserID(swap.SellerID);
-                seller.CurrentBalance += swap.AskP;
+                seller.CurrentBalence += swap.AskP;
                 TransactionModel tx = new TransactionModel
                 {
                     Amount = swap.AskP,
@@ -737,7 +933,7 @@ namespace MySQLSep16
                 };
                 transactions.CreateTransaction(tx);
 
-
+                swappingCar.userID = userID;
 
                 offers.DeleteOffer(swap);
                 cardata.UpdateCar(swappingCar);
@@ -751,23 +947,22 @@ namespace MySQLSep16
         }
         public void usedMPTrigger(int choice)
         {
+            Console.Clear();
             switch (choice)
             {
-                case 0:
+                case 3:
                     Console.Clear();
                     showMPMain();
                     break;
-                case 1:
-                    Console.Clear();
-                    showBuyUsedMarketPlace();
-                    break;
+               
                 case 2:
                     Console.Clear();
-                    showSearch();
+                    //sell**************************************************************************************************8
+                    sellUsed();
                     break;
-                case 3:
+                case 1:
                     Console.Clear();
-                    showBuyFromMarketPlace();
+                    buyUsed();
                     break;
 
 
@@ -775,10 +970,10 @@ namespace MySQLSep16
         }
         public void MPTrigger(int choice)
         {
-           
+            
             switch (choice)
             {
-                case 0:
+                case 4:
                     Console.Clear();
                     showMainScreen();
                     break;
@@ -801,6 +996,7 @@ namespace MySQLSep16
 
         public int getInt(string msg)
         {
+            
             bool cont = false;
             int output = -2;
             while (!cont)
@@ -808,7 +1004,7 @@ namespace MySQLSep16
                 Console.WriteLine(msg);
                 cont = Int32.TryParse(Console.ReadLine(), out output);
                 
-                    cont = false;
+                   
                
             }
             return output;
@@ -874,15 +1070,18 @@ namespace MySQLSep16
         public void printCar (CarModel x)
         {
             
-            Console.WriteLine(x.CarID + ":" + maunfacters.GetManufacturerByID(x.Brand).ManufacturerName + "Model:" + carmodeldata.GetCarByID(x.CarID).ModelName);
-            Console.WriteLine("Engine: "+enginedata.GetEngineByID(cardata.GetCarByID(x.CarID).fgn_EngineID)+"Sponser: "/*  ADD sponser part here when sponsership data access is there*/);
+            Console.WriteLine(x.CarID + ":" + maunfacters.GetManufacturerByID(x.Brand).ManufacturerName + " Model:" + carmodeldata.GetCarByID(x.CarID).ModelName);
+            Console.WriteLine("Engine: "+enginedata.GetEngineByID(cardata.GetCarByID(x.CarID).fgn_EngineID).toString()+" Sponser: "+sponsers.GetSponserByID(cardata.GetCarByID(x.CarID).sponsor).toString());
             
         }
         
         
         //put with timesystem
-        public void updatePrices()
+        public static void updatePrices()
         {
+            CarModelData carmodeldata = new CarModelData();
+            SearchData searches = new SearchData();
+
             List<CarModelsModel> allModels = carmodeldata.getAllCarModels();
 
             foreach (CarModelsModel x in allModels)
@@ -913,30 +1112,37 @@ namespace MySQLSep16
                 }
             }
         }
-        public void payLoans()
+        public static void payLoans()
         {
+            TimeData times = new TimeData();
+            LoanDataAccess loans = new LoanDataAccess();
+            CheckingAccountData bankAccounts = new CheckingAccountData();
+            TransactionDataAccess transactions = new TransactionDataAccess();
+            if (times.GetTimeByID(userID).TimePassed % 500 == 0) { 
             List<LoanModel> allLoans = loans.getAllLoans();
-            foreach (LoanModel x in allLoans){
-                if (x.Term < x.MonthlyPayment)
+                foreach (LoanModel x in allLoans)
                 {
-                    loans.DeletebyLoanID(x.LoanID);
-                }
-                else
-                {
-                    CheckingAccountModel currentDebtor = bankAccounts.GetAccountByUserID(userID);
-                    currentDebtor.CurrentBalance -= (int)loans.CalculatePayment(x.original_amount, x.Term);
-                    x.MonthlyPayment++;
-                    loans.UpdateLoan(x);
-                    bankAccounts.UpdateAccount(currentDebtor);
-                    TransactionModel loanPayment = new TransactionModel
+                    if (x.Term < x.MonthlyPayment)
                     {
-                        Type = true,
-                        UserID = userID,
-                        Date = DateTime.Now,
-                        Source="Loan Payment for Load ID"+x.LoanID,
-                        Amount=(int)loans.CalculatePayment(x.original_amount, x.Term)
-                    };
-                    transactions.CreateTransaction(loanPayment);
+                        loans.DeletebyLoanID(x.LoanID);
+                    }
+                    else
+                    {
+                        CheckingAccountModel currentDebtor = bankAccounts.GetAccountByUserID(userID);
+                        currentDebtor.CurrentBalence -= (int)loans.CalculatePayment(x.original_amount, x.Term);
+                        x.MonthlyPayment++;
+                        loans.UpdateLoan(x);
+                        bankAccounts.UpdateAccount(currentDebtor);
+                        TransactionModel loanPayment = new TransactionModel
+                        {
+                            Type = true,
+                            UserID = userID,
+                            Date = DateTime.Now,
+                            Source = "Loan Payment for Load ID" + x.LoanID,
+                            Amount = (int)loans.CalculatePayment(x.original_amount, x.Term)
+                        };
+                        transactions.CreateTransaction(loanPayment);
+                    }
                 }
             }
         }
