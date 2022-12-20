@@ -103,7 +103,7 @@ namespace MySQLSep16.GamePlay
             CarModelData carmodeldata = new CarModelData();
             ConsoleKey input = ConsoleKey.W;
           
-            gasAmount = carmodeldata.GetCarByID(drivingCar.fgn_ModelID).fuelCapacity* carmodeldata.GetCarByID(drivingCar.fgn_ModelID).ModelMPG*20;
+            gasAmount = carmodeldata.GetCarByID(drivingCar.fgn_ModelID).fuelCapacity* carmodeldata.GetCarByID(drivingCar.fgn_ModelID).ModelMPG*3;
 
 
 
@@ -117,8 +117,24 @@ namespace MySQLSep16.GamePlay
                     if (gasAmount < 0)
                     {
                         Console.Clear();
+                        CheckingAccountModel currentAccount = accounts.GetAccountByUserID(drivingCar.userID);
+                        currentAccount.CurrentBalence -= moneySpent;
+                        accounts.UpdateAccount(currentAccount);
+                        if (moneySpent != 0)
+                        {
+                            TransactionModel model = new TransactionModel
+                            {
+                                UserID = drivingCar.userID,
+                                Amount = moneySpent,
+                                Date = DateTime.Now,
+                                Source = "Driving gas for CarID: " + drivingCar.CarID,
+                                Type = true
+                            };
 
-                        exitCode = 0;
+
+                            txts.CreateTransaction(model);
+                        }
+                        return 0;
                     }
                     else
                     {
@@ -172,6 +188,12 @@ namespace MySQLSep16.GamePlay
                         //Console.ReadLine();
                         Thread.Sleep(300);
                         Console.Clear();
+                        if (gasAmount < 0)
+                        {
+                            Console.Clear();
+
+                            exitCode = 0;
+                        }
                         if (exitCode != -1)
                         {
 
@@ -179,18 +201,20 @@ namespace MySQLSep16.GamePlay
                             CheckingAccountModel currentAccount=accounts.GetAccountByUserID(drivingCar.userID);
                             currentAccount.CurrentBalence -= moneySpent;
                             accounts.UpdateAccount(currentAccount);
-                            TransactionModel model = new TransactionModel
+                            if (moneySpent != 0)
                             {
-                                UserID = drivingCar.userID,
-                                Amount = moneySpent,
-                                Date = DateTime.Now,
-                                Source = "Driving gas for CarID: " + drivingCar.CarID,
-                                Type = true
-                            };
+                                TransactionModel model = new TransactionModel
+                                {
+                                    UserID = drivingCar.userID,
+                                    Amount = moneySpent,
+                                    Date = DateTime.Now,
+                                    Source = "Driving gas for CarID: " + drivingCar.CarID,
+                                    Type = true
+                                };
 
 
-                            txts.CreateTransaction(model);
-
+                                txts.CreateTransaction(model);
+                            }
                             return exitCode;
                         }
                     }
@@ -206,14 +230,14 @@ namespace MySQLSep16.GamePlay
             }
             return -1;
         }
-
+       
         
         public static void printSection(int x1, int x2, int x, int y)
         {
             try
             {
-                Console.WriteLine("Total gas Amount: " + gasAmount);
-                Console.WriteLine("Total money spent: "+moneySpent);
+                Console.WriteLine("Total gas Amount: " + (Int32)(gasAmount));
+                Console.WriteLine("Total money spent: "+(Int32)moneySpent);
                 //Console.WriteLine("Number of rows"+(x2-x1));
                 GameSpace[,] tempSect = new GameSpace[x2 - x1, gameBoard.GetLength(1)];
                 for (int i = x1; i < x2; i++)
@@ -240,7 +264,7 @@ namespace MySQLSep16.GamePlay
                         {
                            
                             hit = true;
-                            exitCode = 8;
+                            exitCode = 9;
                             break;
                         }
                         else if (tempSect[y + i, x + j].symbolType == GameSpace.space.person)
@@ -303,7 +327,7 @@ namespace MySQLSep16.GamePlay
             }
             catch (Exception ex)
             {
-                Console.WriteLine("You hit the boarder");
+                
                 exitCode = 8;
                 hit = true;
             }

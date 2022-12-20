@@ -10,8 +10,10 @@ namespace MySQLSep16.Models
     {
         public int ModelID { get; set; }
         public string ModelName { get; set; }
-        public double ModelMPG { get; set; }
-        public double fuelCapacity { get; set; }
+        public float ModelMPG { get; set; }
+        public float fuelCapacity { get; set; }
         public int Price { get; set; }
+
+        public int basePrice { get; set; }
     }
 }

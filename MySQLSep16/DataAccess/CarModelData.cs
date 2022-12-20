@@ -31,9 +31,10 @@ namespace MySQLSep16.DataAccess
             _db.SaveData(sql, c);
         }
 
-        public void UpdateCar(CarModelsModel c)
+        public void UpdateCar(CarModelsModel c)//maybe a problem here
         {
-            string sql = "UPDATE `carmodels` SET `ModelName` = @ModelName, 'ModelMPG' = @ModelMPG, 'fuelCapacity' = @fuelCapacity , 'Price'=@Price WHERE `carmodels`.`ModelID` = ModelID";
+            
+            string sql = "UPDATE `carmodels` SET `ModelName` = @ModelName, `ModelMPG` = @ModelMPG, `fuelCapacity` = @fuelCapacity , `Price`=@Price WHERE `carmodels`.`ModelID` = @ModelID";
             _db.SaveData(sql, c);
         }
 

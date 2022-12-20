@@ -12,6 +12,7 @@ namespace MultithreadingApplication
 {
     class ThreadCreationProgram
     {
+        public static bool cont = true;
         public static void CallToTimeThread()
         {
             int x = 1;
@@ -35,7 +36,7 @@ namespace MultithreadingApplication
 
             string fileStart = Path.GetFullPath("WiiShop.wav");
             bool Continue = true;
-            while (Continue)
+            while (Continue && cont)
             {
                 X.SoundLocation = fileStart;
                 X.Play();
@@ -47,6 +48,7 @@ namespace MultithreadingApplication
 
         public static void CallToMusicThread()
         {
+            cont = false;
             SoundPlayer X = new SoundPlayer();
 
             string file1 = Path.GetFullPath("GiveYouTheWorld.wav");
@@ -165,8 +167,13 @@ namespace MultithreadingApplication
         public static void RunStartMusic()
         {
             ThreadStart StartMusicref = new ThreadStart(CallToStartMusicThread);
-            Thread StartMusicThread = new Thread(StartMusicref);
-            StartMusicThread.Start();
+            
+               
+
+             Thread StartMusicThread = new Thread(StartMusicref);
+             StartMusicThread.Start();
+             
+            
         }
     }
 }
